@@ -18,7 +18,7 @@ namespace AlrightSocialWebApp.Models
             var configuration = builder.Build();
             optionsBuilder.UseSqlServer(configuration["ConnectionStrings:DefaultConnection"]);
         }
-        public DbSet<AccountModel> UserLogin { get; set; }
+        public DbSet<User> Users { get; set; }
 
     }
 }

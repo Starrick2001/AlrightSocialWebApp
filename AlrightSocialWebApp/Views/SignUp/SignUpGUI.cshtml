@@ -1,0 +1,49 @@
+﻿
+@{
+    ViewData["Title"] = "SignUpGUI";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model AlrightSocialWebApp.Models.User;
+
+<h1>Đăng ký</h1>
+@if (ViewBag.error != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @ViewBag.error
+    </div>
+}
+
+<form method="post" asp-controller="SignUp" asp-action="signup">
+    <div class="mb-3">
+        <label for="InputEmail" class="form-label">Địa chỉ Email</label>
+        <input type="email" class="form-control" id="InputEmail" asp-for="EmailAddress" required>
+    </div>
+    <div class="mb-3">
+        <label for="InputPassword" class="form-label">Password</label>
+        <input type="password" class="form-control" asp-for="Password" required>
+    </div>
+    <div class="mb-3">
+        <label for="InputReEnterPassword" class="form-label">Nhập lại mật khẩu</label>
+        <input type="password" class="form-control" name="ReEnterPassword" required>
+    </div>
+    <div class="mb-3">
+        <label for="InputName" class="form-label">Tên</label>
+        <input type="text" class="form-control" id="InputName" asp-for="name" required>
+    </div>
+    <div class="mb-3">
+        <label for="InputSex" class="form-label">Giới tính</label>
+        <select class="form-control" asp-for="sex" id="InputSex">
+            <option value="Nam">Nam</option>
+            <option value="Nữ">Nữ</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="InputDOB" class="form-label">Ngày sinh</label>
+        <input type="date" class="form-control" id="InputDOB" asp-for="DateOfBirth" value="">
+    </div>
+    <div class="mb-3">
+        <label for="InputPhoneNumber" class="form-label">Số điện thoại</label>
+        <input type="text" class="form-control" id="InputPhoneNumber" asp-for="PhoneNumber">
+    </div>
+    <button type="submit" class="btn btn-primary">Đăng ký</button>
+</form>
