@@ -57,7 +57,7 @@ namespace AlrightSocialWebApp
                     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=HomePage}/{action=Index}/{id?}");
             });
             app.UseSession();
         }

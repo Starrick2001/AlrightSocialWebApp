@@ -30,7 +30,7 @@ namespace AlrightSocialWebApp.Controllers
             {
                 HttpContext.Session.SetString("email", EmailAddress);
                 HttpContext.Session.SetString("name", account.name);
-                return View("~/Views/Home/Index.cshtml");
+                return View("~/Views/HomePage/Index.cshtml");
             }
         }
         private User checkAccount(string Email, string Password)

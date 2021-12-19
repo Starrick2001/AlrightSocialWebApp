@@ -14,7 +14,7 @@ namespace AlrightSocialWebApp.Controllers
         public IActionResult Logout()
         {
             HttpContext.Session.Remove("email");
-            return View("~/Views/Home/Index.cshtml");
+            return View("~/Views/HomePage/Index.cshtml");
         }
     }
 }
