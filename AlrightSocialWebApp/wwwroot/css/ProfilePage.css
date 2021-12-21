@@ -17,7 +17,7 @@ body {
 }
 
 .container {
-    background-color: #151728;
+    background-color: #f3f6fd;
     display: flex;
     max-width: 1600px;
     height: 100vh;
@@ -79,7 +79,7 @@ body {
     flex-shrink: 0;
     margin-left: auto;
     overflow: auto;
-    background-color: #151728;
+    background-color: #f3f6fd;
     display: flex;
     flex-direction: column;
 }
@@ -248,7 +248,7 @@ body {
     padding: 20px;
     flex-grow: 1;
     overflow: scroll;
-    background-color: #24273b;
+    background-color: #fff;
 }
 
 .profile {
@@ -290,7 +290,7 @@ body {
     position: absolute;
     bottom: 0;
     padding-left: 200px;
-    background: #151728;
+    background: #fff;
     width: 100%;
     display: flex;
     border-radius: 0 0 4px 4px;
@@ -299,14 +299,17 @@ body {
 .profile-menu-link {
     padding: 6px 16px;
     margin: 6px 6px;
-    color: #5c5e6e;
+    color: #1f1c2e;
     transition: 0.3s;
     cursor: pointer;
     border-radius: 20px;
+    display: flex;
+    border: none;
+    background-color: transparent;
 }
 
     .profile-menu-link.active, .profile-menu-link:hover {
-        color: #fff;
+        color: #1f1c2e;
         background-color: rgba(195, 207, 244, 0.2);
     }
 
@@ -370,7 +373,7 @@ body {
 }
 
 .box {
-    background-color: #151728;
+    background-color: #fff;
     border-radius: 4px;
 }
 

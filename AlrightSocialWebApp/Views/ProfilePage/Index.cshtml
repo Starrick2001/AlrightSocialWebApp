@@ -6,8 +6,8 @@
 @using Microsoft.AspNetCore.Http;
 @model AlrightSocialWebApp.Models.User;
 <head>
-
     <link rel="stylesheet" href="~/css/ProfilePage.css" />
+    <script src="~/ckeditor/ckeditor.js"></script>
 </head>
 <body>
     <div class="container">
@@ -19,10 +19,11 @@
                         <div class="profile-name">@Model.name</div>
                     </div>
                     <img src="https://images.unsplash.com/photo-1508247967583-7d982ea01526?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2250&q=80" alt="" class="profile-cover">
+
                     <div class="profile-menu">
-                        <a class="profile-menu-link active">Dòng thời gian</a>
-                        <a class="profile-menu-link">Thông tin</a>
-                        <a class="profile-menu-link">Danh sách bạn bè</a>
+                        <button class="profile-menu-link active">Dòng thời gian</button>
+                        <button class="profile-menu-link">Thông tin</button>
+                        <button class="profile-menu-link">Danh sách bạn bè</button>
                     </div>
                 </div>
                 <div class="timeline">
@@ -34,8 +35,16 @@
                                 <a class="status-menu-item" href="#">Videos</a>
                             </div>
                             <div class="status-main">
-                                <img src="https://images.genius.com/2326b69829d58232a2521f09333da1b3.1000x1000x1.jpg" class="status-img">
-                                <textarea class="status-textarea" placeholder="Hãy viết gì đó.."></textarea>
+                                <div class="row">
+                                    <div class="col-1">
+                                        <img src="https://images.genius.com/2326b69829d58232a2521f09333da1b3.1000x1000x1.jpg" class="status-img">
+
+                                    </div>
+                                    <div class="col">
+                                        <textarea class="status-textarea" placeholder="Hãy viết gì đó.." id="editor1"></textarea>
+
+                                    </div>
+                                </div>
                             </div>
                             <div class="status-actions">
                                 <a href="#" class="status-action">
@@ -189,4 +198,9 @@
         </div>
         <div class="overlay"></div>
     </div>
+    <script>
+        var editor = CKEDITOR.replace('editor1');
+        CKFinder.setupCKEditor(editor);
+    </script>
+
 </body>

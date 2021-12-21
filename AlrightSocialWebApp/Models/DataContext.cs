@@ -51,5 +51,6 @@ namespace AlrightSocialWebApp.Models
             conn.Close();
             return user;
         }
+        public DbSet<AlrightSocialWebApp.Models.Post> Post { get; set; }
     }
 }
