@@ -142,6 +142,14 @@ button, a {
     margin: 0 32px;
 }
 
+.account-btn {
+    color: var(--main-color);
+    font-size: 15px;
+    line-height: 24px;
+    font-weight: 700;
+    margin: 0 10px;
+}
+
 .mode-switch {
     background-color: transparent;
     border: none;

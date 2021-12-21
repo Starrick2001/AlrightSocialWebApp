@@ -8,8 +8,9 @@ namespace AlrightSocialWebApp.Controllers
 {
     public class HomePageController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Index(int ID)
         {
+
             return View();
         }
     }

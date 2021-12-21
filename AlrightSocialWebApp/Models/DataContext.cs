@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
+using AlrightSocialWebApp.Models;
 
 namespace AlrightSocialWebApp.Models
 {
@@ -19,6 +22,34 @@ namespace AlrightSocialWebApp.Models
             optionsBuilder.UseSqlServer(configuration["ConnectionStrings:DefaultConnection"]);
         }
         public DbSet<User> Users { get; set; }
+        public User GetUserInfo(string EmailAddress)
+        {
+            User user = new User();
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query = "SELECT * FROM USERS WHERE EmailAddress=@EmailAddress";
+            var command = new SqlCommand(query, conn);
+            command.Parameters.AddWithValue("EmailAddress", EmailAddress);
+            conn.Open();
+            var reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    user.AvatarURL = reader["AvatarURL"].ToString();
+                    user.DateOfBirth = (DateTime) reader["DateOfBirth"];
+                    user.EmailAddress = reader["EmailAddress"].ToString();
+                    user.name = reader["name"].ToString();
+                    user.Password = reader["Password"].ToString();
+                    user.PhoneNumber = reader["PhoneNumber"].ToString();
+                    user.sex = reader["sex"].ToString();
+                    user.SignInStatus = reader["SignInStatus"].ToString();
 
+                }
+                reader.Close();
+            }
+            conn.Close();
+            return user;
+        }
     }
 }
