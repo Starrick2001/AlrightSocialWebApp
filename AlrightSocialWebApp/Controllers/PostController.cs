@@ -6,16 +6,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AlrightSocialWebApp.Models;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace AlrightSocialWebApp.Controllers
 {
+    [Route("post")]
     public class PostController : Controller
     {
-        private readonly DataContext _context;
-
-        public PostController()
+        DataContext _context = new DataContext();
+        private IHostingEnvironment hostingEnvironment;
+        public PostController(IHostingEnvironment hostingEnvironment)
         {
-            _context = new DataContext();
+            this.hostingEnvironment = hostingEnvironment;
         }
 
         // GET: Post
@@ -43,6 +47,8 @@ namespace AlrightSocialWebApp.Controllers
         }
 
         // GET: Post/Create
+        [Route("create")]
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
@@ -51,15 +57,18 @@ namespace AlrightSocialWebApp.Controllers
         // POST: Post/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Route("create")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,Title,Content,TimeCreate,TimeModified,Author,Privacy,ImageURL")] Post post)
+        public IActionResult Create(Post post)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(post);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                post.Title = "asd";
+                post.TimeCreate = DateTime.Now;
+                post.Author = HttpContext.Session.GetString("email");
+                post.Privacy = "Công khai";
+                int count = _context.CreatePost(post);
             }
             return View(post);
         }
@@ -147,6 +156,27 @@ namespace AlrightSocialWebApp.Controllers
         private bool PostExists(int id)
         {
             return _context.Post.Any(e => e.ID == id);
+        }
+
+        [Route("UploadCKEditor")]
+        [HttpPost]
+        public IActionResult UploadCKEditor(IFormFile upload)
+        {
+            string str = Path.Combine(Directory.GetCurrentDirectory(), hostingEnvironment.WebRootPath, "uploads", HttpContext.Session.GetString("email"));
+            if (!Directory.Exists(str))
+            {
+                Directory.CreateDirectory(str);
+            }
+            var fileName = DateTime.Now.ToString("yyyyMMddHHmmss") + upload.FileName;
+            var path = Path.Combine(Directory.GetCurrentDirectory(), hostingEnvironment.WebRootPath,"uploads", HttpContext.Session.GetString("email"), fileName);
+            var stream = new FileStream(path, FileMode.Create);
+            upload.CopyToAsync(stream);
+            return new JsonResult(new
+            {
+                uploaded = 1,
+                fileName = upload.FileName,
+                url = "uploads/" + HttpContext.Session.GetString("email") + "/" + fileName
+            });
         }
     }
 }

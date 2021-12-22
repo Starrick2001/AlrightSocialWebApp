@@ -59,7 +59,6 @@ namespace AlrightSocialWebApp
                     name: "default",
                     pattern: "{controller=HomePage}/{action=Index}/{id?}");
             });
-            app.UseSession();
         }
     }
 }

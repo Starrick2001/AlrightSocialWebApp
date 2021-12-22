@@ -52,5 +52,19 @@ namespace AlrightSocialWebApp.Models
             return user;
         }
         public DbSet<AlrightSocialWebApp.Models.Post> Post { get; set; }
+        public int CreatePost (Post p)
+        {
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query = "INSERT INTO Post (Title, Content, TimeCreate, Author, Privacy) VALUES (@Title, @Content, @TimeCreate, @Author, @Privacy)";
+            SqlCommand cmd = new SqlCommand(query,conn);
+            cmd.Parameters.AddWithValue("@Title", p.Title);
+            cmd.Parameters.AddWithValue("@Content", p.Content);
+            cmd.Parameters.AddWithValue("@TimeCreate", p.TimeCreate);
+            cmd.Parameters.AddWithValue("@Author", p.Author);
+            cmd.Parameters.AddWithValue("@Privacy", p.Privacy);
+            conn.Open();
+            return cmd.ExecuteNonQuery();
+        }
     }
 }

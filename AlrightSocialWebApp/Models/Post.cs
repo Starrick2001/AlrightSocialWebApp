@@ -12,8 +12,8 @@ namespace AlrightSocialWebApp.Models
         public int ID { set; get; }
         public String Title { get; set; }
         public String Content { get; set; }
-        public DateTime TimeCreate { get; set; }
-        public DateTime TimeModified { get; set; }
+        public DateTime? TimeCreate { get; set; }
+        public DateTime? TimeModified { get; set; }
         public String Author { get; set; }
         public String Privacy { get; set; }
         public String ImageURL { get; set; }

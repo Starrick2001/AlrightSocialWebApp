@@ -4,9 +4,20 @@
     ViewData["Title"] = "Create";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<head>
+@section scripts{
     <script src="~/ckeditor/ckeditor.js"></script>
-</head>
+    <script>
+        CKEDITOR.replace('editor1', {
+            height: 400,
+            filebrowserUploadUrl: '/Post/UploadCKEditor'
+        });
+    </script>
+}
+<div class="form-group">
+    <label asp-for="Content" class="control-label"></label>
+    <textarea class="form-control" id="editor1"></textarea>
+    <span asp-validation-for="Content" class="text-danger"></span>
+</div>
 <div class="row">
     <div class="col">
         <form asp-action="Create">
@@ -56,8 +67,3 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-<script>
-    // Replace the <textarea id="editor1"> with a CKEditor 4
-    // instance, using default configuration.
-    CKEDITOR.replace('editor1');
-</script>
