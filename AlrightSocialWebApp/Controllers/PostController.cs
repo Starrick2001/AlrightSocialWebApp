@@ -23,13 +23,17 @@ namespace AlrightSocialWebApp.Controllers
         }
 
         // GET: Post
+        [Route("index")]
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Post.ToListAsync());
         }
 
         // GET: Post/Details/5
-        public async Task<IActionResult> Details(int? id)
+        [Route("DetailedPostPage")]
+        [HttpGet]
+        public async Task<IActionResult> DetailedPostPage(int? id)
         {
             if (id == null)
             {
@@ -64,16 +68,16 @@ namespace AlrightSocialWebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                post.Title = "asd";
                 post.TimeCreate = DateTime.Now;
                 post.Author = HttpContext.Session.GetString("email");
-                post.Privacy = "Công khai";
                 int count = _context.CreatePost(post);
             }
             return View(post);
         }
 
         // GET: Post/Edit/5
+        [Route("edit")]
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -92,6 +96,7 @@ namespace AlrightSocialWebApp.Controllers
         // POST: Post/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Route("edit")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ID,Title,Content,TimeCreate,TimeModified,Author,Privacy,ImageURL")] Post post)
@@ -125,6 +130,8 @@ namespace AlrightSocialWebApp.Controllers
         }
 
         // GET: Post/Delete/5
+        [Route("delete")]
+        [HttpGet]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -143,7 +150,9 @@ namespace AlrightSocialWebApp.Controllers
         }
 
         // POST: Post/Delete/5
-        [HttpPost, ActionName("Delete")]
+        //[HttpPost, ActionName("Delete")]
+        [Route("delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -177,6 +186,15 @@ namespace AlrightSocialWebApp.Controllers
                 fileName = upload.FileName,
                 url = "uploads/" + HttpContext.Session.GetString("email") + "/" + fileName
             });
+        }
+
+        [Route("BrowseCKEditor")]
+        [HttpGet]
+        public IActionResult FileBrowse()
+        {
+            var dir = new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), hostingEnvironment.WebRootPath, "uploads", HttpContext.Session.GetString("email")));
+            ViewBag.fileInfos = dir.GetFiles();
+            return View("FileBrowse");
         }
     }
 }

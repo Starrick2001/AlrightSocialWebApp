@@ -21,7 +21,7 @@
                     <img src="https://images.unsplash.com/photo-1508247967583-7d982ea01526?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2250&q=80" alt="" class="profile-cover">
 
                     <div class="profile-menu">
-                        <button class="profile-menu-link active">Dòng thời gian</button>
+                        <button class="profile-menu-link active">Bài viết</button>
                         <button class="profile-menu-link">Thông tin</button>
                         <button class="profile-menu-link">Danh sách bạn bè</button>
                     </div>
@@ -41,8 +41,15 @@
                                             <img src="https://images.genius.com/2326b69829d58232a2521f09333da1b3.1000x1000x1.jpg" class="status-img">
                                         </div>
                                         <div class="col">
+                                            <label for="input-title">Tiêu đề</label>
+                                            <input id="input-title" name="Title" class="form-control"/>
                                             <textarea class="status-textarea" placeholder="Hãy viết gì đó.." id="editor1" name="Content"></textarea>
-
+                                            <label for="input-privacy" style="color: aliceblue">Quyền riêng tư</label>
+                                            <select class="form-control" name="Privacy" id="input-privacy">
+                                                <option value="Public">Công khai</option>
+                                                <option value="Friend">Bạn bè</option>
+                                                <option value="OnlyMe">Chỉ mình tôi</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -202,7 +209,8 @@
     <script>
         var editor = CKEDITOR.replace('editor1', {
             height: 400,
-            filebrowserUploadUrl: '/Post/UploadCKEditor'
+            filebrowserUploadUrl: '/Post/UploadCKEditor',
+            filebrowserBrowseUrl: '/Post/BrowseCKEditor'
         });
     </script>
 
