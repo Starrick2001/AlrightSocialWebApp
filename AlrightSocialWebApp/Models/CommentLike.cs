@@ -1,17 +1,13 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace AlrightSocialWebApp.Models
 {
     public class CommentLike
     {
         [Key]
-        public int Id { get; set; }
+        public string UserEmail { get; set; }
         [Required]
-        public string SenderEmail { get; set; }
-        [Required]
-        public string ReceiverEmail { get; set; }
-        public DateTime Time { get; set; }
-        public string Content { get; set; }
+        public int CmtID { get; set; }
+        public int NotificationID { get; set; }
     }
 }
