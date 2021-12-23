@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,7 +27,11 @@ namespace AlrightSocialWebApp.Controllers
             
             User user = db.GetUserInfo(EmailAddress);
             ViewData.Model = user;
-            return View();
+            List<Post> list = db.ListOfPost(EmailAddress);
+            dynamic mymodel = new ExpandoObject();
+            mymodel.Users = user;
+            mymodel.Posts = list;
+            return View(mymodel);
         }
         [HttpPost]
         public IActionResult UploadAvatar([FromForm(Name = "avatar")] IFormFile avatar)
@@ -40,7 +45,7 @@ namespace AlrightSocialWebApp.Controllers
             var path = Path.Combine(Directory.GetCurrentDirectory(), hostingEnvironment.WebRootPath, "uploads", HttpContext.Session.GetString("email"), fileName);
             var stream = new FileStream(path, FileMode.Create);
             User user = db.GetUserInfo(HttpContext.Session.GetString("email"));
-            user.AvatarURL = "uploads/" + HttpContext.Session.GetString("email") + "/" + fileName;
+            user.AvatarURL = "/uploads/" + HttpContext.Session.GetString("email") + "/" + fileName;
             db.Users.Update(user);
             db.SaveChanges();
             avatar.CopyToAsync(stream);
