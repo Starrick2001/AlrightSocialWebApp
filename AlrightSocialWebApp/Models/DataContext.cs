@@ -37,7 +37,7 @@ namespace AlrightSocialWebApp.Models
                 while (reader.Read())
                 {
                     user.AvatarURL = reader["AvatarURL"].ToString();
-                    user.DateOfBirth = (DateTime) reader["DateOfBirth"];
+                    user.DateOfBirth = (DateTime)reader["DateOfBirth"];
                     user.EmailAddress = reader["EmailAddress"].ToString();
                     user.name = reader["name"].ToString();
                     user.Password = reader["Password"].ToString();
@@ -51,13 +51,14 @@ namespace AlrightSocialWebApp.Models
             conn.Close();
             return user;
         }
+
         public DbSet<AlrightSocialWebApp.Models.Post> Post { get; set; }
-        public int CreatePost (Post p)
+        public int CreatePost(Post p)
         {
             SqlConnection conn = new SqlConnection();
             conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
             string query = "INSERT INTO Post (Title, Content, TimeCreate, Author, Privacy) VALUES (@Title, @Content, @TimeCreate, @Author, @Privacy)";
-            SqlCommand cmd = new SqlCommand(query,conn);
+            SqlCommand cmd = new SqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@Title", p.Title);
             cmd.Parameters.AddWithValue("@Content", p.Content);
             cmd.Parameters.AddWithValue("@TimeCreate", p.TimeCreate);

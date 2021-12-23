@@ -15,7 +15,7 @@
             <div class="app-header-left">
                 <!--<span class="app-icon"></span>-->
                 <!--<p class="app-name">Alright</p>-->
-                <a href="/"><img src="~/logo/logo_alrightsocial_trans.png" height="40px" style="margin: 0 30px"/></a>
+                <a href="/"><img src="~/logo/logo_alrightsocial_trans.png" height="40px" style="margin: 0 30px" /></a>
                 <div class="search-wrapper">
                     <input class="search-input" type="text" placeholder="Search">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="feather feather-search" viewBox="0 0 24 24">
@@ -55,13 +55,14 @@
                             <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                         </svg>
                     </button>
-                    @using (Html.BeginForm("Index", "ProfilePage", new { EmailAddress = Context.Session.GetString("email")}, FormMethod.Post))
-                    {
+                    <a href="/ProfilePage?EmailAddress=@Context.Session.GetString("email")">
+
                         <button class="profile-btn">
-                            <img src="https://assets.codepen.io/3306515/IMG_2025.jpg" />
+                            <img src="@Context.Session.GetString("avatarUrl")" />
                             <span>@Context.Session.GetString("name")</span>
                         </button>
-                    }
+                    </a>
+
                     @using (Html.BeginForm("Logout", "Logout", FormMethod.Get))
                     {
                         <button class="notification-btn"><span class="account-btn">Đăng xuất</span></button>

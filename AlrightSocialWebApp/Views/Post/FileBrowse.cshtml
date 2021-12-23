@@ -11,6 +11,19 @@
     <title>FileBrowse</title>
     <script src="~/lib/jquery/dist/jquery.min.js" type="text/javascript"></script>
     <script src="~/ckeditor/ckeditor.js" type="text/javascript"></script>
+    <style>
+        #fileExplorer {
+            float: left;
+            
+            border-left: 1px solid #dff0ff;
+        }
+        .thumbnail {
+            float: left;
+            margin: 3px;
+            padding: 3px;
+            border: 1px solid #dff0ff;
+        }
+    </style>
     <script>
         $(document).ready(function () {
             var funcNum = @(Context.Request.Query["CKEditorFuncNum"] + ";");

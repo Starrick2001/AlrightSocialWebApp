@@ -31,6 +31,7 @@ namespace AlrightSocialWebApp.Controllers
                 else
                 {
                     account.Password = BCrypt.Net.BCrypt.HashPassword(account.Password);
+                    account.AvatarURL = "/logo/logo_alrightsocial_circle.png";
                     db.Users.Add(account);
                     db.SaveChanges();
                     return View("~/Views/SignIn/SignInGUI.cshtml");
