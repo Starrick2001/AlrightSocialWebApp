@@ -9,6 +9,7 @@ using AlrightSocialWebApp.Models;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using System.Dynamic;
 
 namespace AlrightSocialWebApp.Controllers
 {
@@ -33,21 +34,21 @@ namespace AlrightSocialWebApp.Controllers
         // GET: Post/Details/5
         [Route("DetailedPostPage")]
         [HttpGet]
-        public async Task<IActionResult> DetailedPostPage(int? id)
+        public async Task<IActionResult> DetailedPostPage(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
             var post = await _context.Post
                 .FirstOrDefaultAsync(m => m.ID == id);
+            var author = await _context.Users
+                .FirstOrDefaultAsync(m => m.EmailAddress == post.Author);
             if (post == null)
             {
                 return NotFound();
             }
-
-            return View(post);
+            dynamic mymodel = new ExpandoObject();
+            mymodel.Post = _context.GetPostInformation(id);
+            mymodel.Author = author;
+            return View(mymodel);
         }
 
         // GET: Post/Create
@@ -73,7 +74,7 @@ namespace AlrightSocialWebApp.Controllers
                 post.Author = HttpContext.Session.GetString("email");
                 int count = _context.CreatePost(post);
             }
-            return View(post);
+            return RedirectToAction("Index","Post");
         }
 
         // GET: Post/Edit/5

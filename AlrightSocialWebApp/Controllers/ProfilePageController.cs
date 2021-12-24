@@ -27,10 +27,10 @@ namespace AlrightSocialWebApp.Controllers
             
             User user = db.GetUserInfo(EmailAddress);
             ViewData.Model = user;
-            List<Post> list = db.ListOfPost(EmailAddress);
+            List<object> postlist = db.GetListOfPost(EmailAddress);
             dynamic mymodel = new ExpandoObject();
-            mymodel.Users = user;
-            mymodel.Posts = list;
+            mymodel.User = user;
+            mymodel.Posts = postlist;
             return View(mymodel);
         }
         [HttpPost]

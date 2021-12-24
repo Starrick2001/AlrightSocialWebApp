@@ -69,12 +69,12 @@ namespace AlrightSocialWebApp.Models
             return cmd.ExecuteNonQuery();
         }
 
-        public List<Post> ListOfPost(string EmailAddress)
+        public List<object> GetListOfPost(string EmailAddress)
         {
-            List<Post> list = new List<Post>();
+            List<object> list = new List<object>();
             SqlConnection conn = new SqlConnection();
             conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
-            string query = "SELECT * FROM Post WHERE Author=@EmailAddress";
+            string query = "SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, ISNULL(LikeTable.[Like],0) AS [Like] , ISNULL(CommentTable.[Comment],0) AS [Comment], ISNULL(ShareTable.[Share],0) AS [Share] FROM Post LEFT JOIN (SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN (SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN (SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID WHERE Author = @EmailAddress";
             var command = new SqlCommand(query, conn);
             command.Parameters.AddWithValue("EmailAddress", EmailAddress);
             conn.Open();
@@ -83,7 +83,7 @@ namespace AlrightSocialWebApp.Models
             {
                 while (reader.Read())
                 {
-                    list.Add(new Post()
+                    list.Add(new
                     {
                         ID = (int)reader["ID"],
                         Title = reader["Title"].ToString(),
@@ -91,13 +91,49 @@ namespace AlrightSocialWebApp.Models
                         TimeCreate = (DateTime)reader["TimeCreate"],
                         TimeModified = (DateTime)reader["TimeModified"],
                         Author = reader["Author"].ToString(),
-                        Privacy = reader["Privacy"].ToString()
+                        Privacy = reader["Privacy"].ToString(),
+                        Like = (int)reader["Like"],
+                        Comment = (int)reader["Comment"],
+                        Share = (int)reader["Share"]
                     });
                 }
                 reader.Close();
             }
             conn.Close();
             return list;
+        }
+        public object GetPostInformation(int PostID)
+        {
+            object post = new Post();
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query = "SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, ISNULL(LikeTable.[Like],0) AS [Like] , ISNULL(CommentTable.[Comment],0) AS [Comment], ISNULL(ShareTable.[Share],0) AS [Share] FROM Post LEFT JOIN (SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN (SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN (SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID WHERE Post.ID = @PostID";
+            var command = new SqlCommand(query, conn);
+            command.Parameters.AddWithValue("PostID", PostID);
+            conn.Open();
+            var reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    post = new
+                    {
+                        ID = (int)reader["ID"],
+                        Title = reader["Title"].ToString(),
+                        Content = reader["Content"].ToString(),
+                        TimeCreate = (DateTime)reader["TimeCreate"],
+                        TimeModified = (DateTime)reader["TimeModified"],
+                        Author = reader["Author"].ToString(),
+                        Privacy = reader["Privacy"].ToString(),
+                        Like = (int)reader["Like"],
+                        Comment = (int)reader["Comment"],
+                        Share = (int)reader["Share"]
+                    };
+                }
+                reader.Close();
+            }
+            conn.Close();
+            return post;
         }
     }
 }

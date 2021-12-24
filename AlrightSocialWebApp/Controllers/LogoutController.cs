@@ -4,15 +4,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AlrightSocialWebApp.Models;
 
 namespace AlrightSocialWebApp.Controllers
 {
     public class LogoutController : Controller
     {
+        DataContext db = new DataContext();
         [HttpGet]
         [Route("logout")]
         public IActionResult Logout()
         {
+            var account = db.Users.SingleOrDefault(a => a.EmailAddress.Equals(HttpContext.Session.GetString("email")));
+            account.SignInStatus = "Offline";
+            db.Users.Update(account);
+            db.SaveChanges();
             HttpContext.Session.Remove("email");
             return View("~/Views/HomePage/Index.cshtml");
         }

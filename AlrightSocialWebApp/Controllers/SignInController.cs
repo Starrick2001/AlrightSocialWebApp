@@ -41,6 +41,9 @@ namespace AlrightSocialWebApp.Controllers
             {
                 if (BCrypt.Net.BCrypt.Verify(Password, account.Password))
                 {
+                    account.SignInStatus = "Online";
+                    db.Users.Update(account);
+                    db.SaveChanges();
                     return account;
                 }
             }

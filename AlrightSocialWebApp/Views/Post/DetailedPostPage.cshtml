@@ -1,61 +1,168 @@
-﻿@model AlrightSocialWebApp.Models.Post
+﻿@model dynamic
+@using Microsoft.AspNetCore.Http;
 
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<head>
+    <link rel="stylesheet" href="~/css/DetailedPostPage.css" />
+</head>
 
-<h1>Details</h1>
+<section class="main" style="overflow: auto;flex:2">
+    <div class="wrapper">
+        <div class="left-col">
 
-<div>
-    <h4>Post</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Content)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.Raw(Model.Content))
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TimeCreate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TimeCreate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TimeModified)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TimeModified)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Author)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Author)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Privacy)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Privacy)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageURL)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImageURL)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.ID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+            <div class="post">
+                <div class="info">
+                    <div class="user">
+                        <div class="profile-pic"><img src="@Model.Author.AvatarURL" alt="" width="40px" height="40px" style="border-radius: 50%"></div>
+                        <p class="username">@Model.Author.name</p>
+                    </div>
+                    <img src="img/option.PNG" class="options" alt="">
+                </div>
+                <h3 class="text-center">@Html.Raw(@Model.Post.GetType().GetProperty("Title").GetValue(Model.Post, null))</h3>
+                <div class="m-4">
+                    @Html.Raw(@Model.Post.GetType().GetProperty("Content").GetValue(Model.Post, null))
+                </div>
+                <div class="post-content">
+                    <div class="reaction-wrapper">
+                        <a href="#" class="album-action">
+                            <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                            </svg>
+                            @Model.Post.GetType().GetProperty("Like").GetValue(Model.Post, null)
+                        </a>
+                        <a href="#" class="album-action">
+                            <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
+                                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                            </svg>
+                            @Model.Post.GetType().GetProperty("Comment").GetValue(Model.Post, null)
+                        </a>
+                        <a href="#" class="album-action">
+                            <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
+                                <path d="M17 1l4 4-4 4" />
+                                <path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4" />
+                                <path d="M21 13v2a4 4 0 01-4 4H3" />
+                            </svg>
+                            @Model.Post.GetType().GetProperty("Share").GetValue(Model.Post, null)
+                        </a>
+                    </div>
+                    <p class="likes">1,012 likes</p>
+                    <p class="description"><span>username </span> Lorem ipsum dolor sit amet consectetur, adipisicing elit. Pariatur tenetur veritatis placeat, molestiae impedit aut provident eum quo natus molestias?</p>
+                    <p class="post-time">2 minutes ago</p>
+                </div>
+                @if (Context.Session.GetString("email") != null)
+                {
+                    <div class="comment-wrapper">
+                        <img src="@Context.Session.GetString("avatarUrl")" class="icon mx-2" alt="" style="border-radius: 50%">
+                        <input type="text" class="comment-box" placeholder="Thêm bình luận">
+                        <button class="comment-btn py-2">Bình luận</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+<div class="messages-section">
+    <button class="messages-close">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="15" y1="9" x2="9" y2="15" />
+            <line x1="9" y1="9" x2="15" y2="15" />
+        </svg>
+    </button>
+    <div class="projects-section-header">
+        <p>Client Messages</p>
+    </div>
+    <div class="messages">
+        <div class="message-box">
+            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2550&q=80" alt="profile image">
+            <div class="message-content">
+                <div class="message-header">
+                    <div class="name">Stephanie</div>
+                    <div class="star-checkbox">
+                        <input type="checkbox" id="star-1">
+                        <label for="star-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                            </svg>
+                        </label>
+                    </div>
+                </div>
+                <p class="message-line">
+                    I got your first assignment. It was quite good. 🥳 We can continue with the next assignment.
+                </p>
+                <p class="message-line time">
+                    Dec, 12
+                </p>
+            </div>
+        </div>
+        <div class="message-box">
+            <img src="https://images.unsplash.com/photo-1600486913747-55e5470d6f40?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2550&q=80" alt="profile image">
+            <div class="message-content">
+                <div class="message-header">
+                    <div class="name">Mark</div>
+                    <div class="star-checkbox">
+                        <input type="checkbox" id="star-2">
+                        <label for="star-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                            </svg>
+                        </label>
+                    </div>
+                </div>
+                <p class="message-line">
+                    Hey, can tell me about progress of project? I'm waiting for your response.
+                </p>
+                <p class="message-line time">
+                    Dec, 12
+                </p>
+            </div>
+        </div>
+        <div class="message-box">
+            <img src="https://images.unsplash.com/photo-1543965170-4c01a586684e?ixid=MXwxMjA3fDB8MHxzZWFyY2h8NDZ8fG1hbnxlbnwwfDB8MHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=60" alt="profile image">
+            <div class="message-content">
+                <div class="message-header">
+                    <div class="name">David</div>
+                    <div class="star-checkbox">
+                        <input type="checkbox" id="star-3">
+                        <label for="star-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                            </svg>
+                        </label>
+                    </div>
+                </div>
+                <p class="message-line">
+                    Awesome! 🤩 I like it. We can schedule a meeting for the next one.
+                </p>
+                <p class="message-line time">
+                    Dec, 12
+                </p>
+            </div>
+        </div>
+        <div class="message-box">
+            <img src="https://images.unsplash.com/photo-1533993192821-2cce3a8267d1?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTl8fHdvbWFuJTIwbW9kZXJufGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=60" alt="profile image">
+            <div class="message-content">
+                <div class="message-header">
+                    <div class="name">Jessica</div>
+                    <div class="star-checkbox">
+                        <input type="checkbox" id="star-4">
+                        <label for="star-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                            </svg>
+                        </label>
+                    </div>
+                </div>
+                <p class="message-line">
+                    I am really impressed! Can't wait to see the final result.
+                </p>
+                <p class="message-line time">
+                    Dec, 11
+                </p>
+            </div>
+        </div>
+    </div>
 </div>

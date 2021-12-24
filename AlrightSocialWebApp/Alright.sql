@@ -110,3 +110,23 @@ CREATE TABLE SuspendedUser (
 	Duration int,
 	FOREIGN KEY (SuspendedEmail) REFERENCES Users(EmailAddress)
 )
+
+
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, ISNULL(LikeTable.[Like],0) AS [Like] , ISNULL(CommentTable.[Comment],0) AS [Comment], ISNULL(ShareTable.[Share],0) AS [Share]
+FROM Post 
+	LEFT JOIN 
+	(SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] 
+	FROM PostLike 
+	GROUP BY PostLike.PostID) LikeTable 
+	ON LikeTable.ID = Post.ID 
+	LEFT JOIN 
+	(SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment]
+	FROM PostComment
+	GROUP BY PostComment.PostID) CommentTable
+	ON Post.ID=CommentTable.PostID
+	LEFT JOIN 
+	(SELECT PostID, COUNT(UserEmail) AS [Share]
+	FROM PostShare
+	GROUP BY PostShare.PostID) ShareTable
+	ON Post.ID=ShareTable.PostID
+WHERE Author = 'lebuidihoa257@gmail.com'
