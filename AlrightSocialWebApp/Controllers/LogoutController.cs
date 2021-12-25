@@ -20,7 +20,7 @@ namespace AlrightSocialWebApp.Controllers
             db.Users.Update(account);
             db.SaveChanges();
             HttpContext.Session.Remove("email");
-            return View("~/Views/HomePage/Index.cshtml");
+            return RedirectToAction("Index", "HomePage");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace AlrightSocialWebApp.Models
 {
@@ -11,6 +12,8 @@ namespace AlrightSocialWebApp.Models
         [Required]
         public int PostID { get; set; }
         public string Privacy { get; set; }
-        public int NotificationID { get; set; }
+        public int? NotificationID { get; set; }
+        public DateTime? Time { get; set; }
+
     }
 }

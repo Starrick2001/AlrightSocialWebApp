@@ -937,3 +937,24 @@ button, a {
         top: 10px;
     }
 }
+
+.album-action {
+    margin-right: 20px;
+    text-decoration: none;
+    color: #a2a4b4;
+    display: inline-flex;
+    align-items: center;
+    font-weight: 600;
+}
+    .album-action:hover {
+        margin-right: 20px;
+        text-decoration: none;
+        color: #e51d60;
+        display: inline-flex;
+        align-items: center;
+        font-weight: 600;
+    }
+    .album-action svg {
+        width: 16px;
+        margin-right: 6px;
+    }

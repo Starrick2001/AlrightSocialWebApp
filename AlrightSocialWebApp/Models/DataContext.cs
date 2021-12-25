@@ -102,6 +102,75 @@ namespace AlrightSocialWebApp.Models
             conn.Close();
             return list;
         }
+        public List<object> GetListOfPostHomePage(string EmailAddress)
+        {
+            List<object> list = new List<object>();
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query = "SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, Users.AvatarURL, Users.name, ISNULL(LikeTable.[Like], 0) AS[Like] , ISNULL(CommentTable.[Comment], 0) AS[Comment], ISNULL(ShareTable.[Share], 0) AS[Share] FROM Post LEFT JOIN (SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN (SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN (SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Post.Author = Users.EmailAddress";
+            var command = new SqlCommand(query, conn);
+            command.Parameters.AddWithValue("EmailAddress", EmailAddress);
+            conn.Open();
+            var reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    list.Add(new
+                    {
+                        ID = (int)reader["ID"],
+                        Title = reader["Title"].ToString(),
+                        Content = reader["Content"].ToString(),
+                        TimeCreate = (DateTime)reader["TimeCreate"],
+                        TimeModified = (DateTime)reader["TimeModified"],
+                        Author = reader["Author"].ToString(),
+                        AvatarURL = reader["AvatarURL"].ToString(),
+                        AuthorName = reader["name"].ToString(),
+                        Privacy = reader["Privacy"].ToString(),
+                        Like = (int)reader["Like"],
+                        Comment = (int)reader["Comment"],
+                        Share = (int)reader["Share"]
+                    });
+                }
+                reader.Close();
+            }
+            conn.Close();
+            return list;
+        }
+        public List<object> GetListOfPublicPost()
+        {
+            List<object> list = new List<object>();
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query = "SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, Users.AvatarURL, Users.name, ISNULL(LikeTable.[Like], 0) AS[Like] , ISNULL(CommentTable.[Comment], 0) AS[Comment], ISNULL(ShareTable.[Share], 0) AS[Share] FROM Post LEFT JOIN (SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN (SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN (SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Post.Author = Users.EmailAddress WHERE Post.Privacy='Public'";
+            var command = new SqlCommand(query, conn);
+            conn.Open();
+            var reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    list.Add(new
+                    {
+                        ID = (int)reader["ID"],
+                        Title = reader["Title"].ToString(),
+                        Content = reader["Content"].ToString(),
+                        TimeCreate = (DateTime)reader["TimeCreate"],
+                        TimeModified = (DateTime)reader["TimeModified"],
+                        Author = reader["Author"].ToString(),
+                        AvatarURL = reader["AvatarURL"].ToString(),
+                        AuthorName = reader["name"].ToString(),
+                        Privacy = reader["Privacy"].ToString(),
+                        Like = (int)reader["Like"],
+                        Comment = (int)reader["Comment"],
+                        Share = (int)reader["Share"]
+                    });
+                }
+                reader.Close();
+            }
+            conn.Close();
+            return list;
+        }
         public object GetPostInformation(int PostID)
         {
             object post = new Post();
@@ -135,5 +204,84 @@ namespace AlrightSocialWebApp.Models
             conn.Close();
             return post;
         }
+        public DbSet<AlrightSocialWebApp.Models.PostComment> PostComment { get; set; }
+        public void CreateComment(PostComment cmt)
+        {
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query2 = "INSERT INTO PostComment (PostID, UserEmail, Content, Time) VALUES (@PostID, @UserEmail, @Content, @Time)";
+            SqlCommand cmd2 = new SqlCommand(query2, conn);
+            cmd2.Parameters.AddWithValue("@PostID", cmt.PostID);
+            cmd2.Parameters.AddWithValue("@UserEmail", cmt.UserEmail);
+            cmd2.Parameters.AddWithValue("@Content", cmt.Content);
+            cmd2.Parameters.AddWithValue("@Time", DateTime.Now);
+            conn.Open();
+            cmd2.ExecuteNonQuery();
+        }
+        public void CreateComment(PostComment cmt, Post post)
+        {
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+
+            string query1 = "INSERT INTO Notification (UserEmail, Content, Time, isRead) VALUES (@UserEmail, @Content, @Time, 'false')";
+            SqlCommand cmd1 = new SqlCommand(query1, conn);
+            cmd1.Parameters.AddWithValue("@UserEmail", post.Author);
+            cmd1.Parameters.AddWithValue("@Content", cmt.UserEmail + " đã bình luận về bài viết của bạn.");
+            cmd1.Parameters.AddWithValue("@Time", DateTime.Now);
+            conn.Open();
+            cmd1.ExecuteNonQuery();
+            int numberofnotification = -1;
+            string getnumberofnotification = "SELECT ISNULL(MAX(ID),0) AS [NUMBER] FROM NOTIFICATION";
+            SqlCommand command = new SqlCommand(getnumberofnotification, conn);
+            var reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    numberofnotification = (int)reader["NUMBER"];
+                }
+                reader.Close();
+            }
+            conn.Close();
+            string query2 = "INSERT INTO PostComment (PostID, UserEmail, Content, NotificationID, Time) VALUES (@PostID, @UserEmail, @Content, @NotificationID, @Time)";
+            SqlCommand cmd2 = new SqlCommand(query2, conn);
+            cmd2.Parameters.AddWithValue("@PostID", cmt.PostID);
+            cmd2.Parameters.AddWithValue("@UserEmail", cmt.UserEmail);
+            cmd2.Parameters.AddWithValue("@Content", cmt.Content);
+            cmd2.Parameters.AddWithValue("@Time", DateTime.Now);
+            cmd2.Parameters.AddWithValue("@NotificationID", numberofnotification);
+            conn.Open();
+            cmd2.ExecuteNonQuery();
+        }
+
+        public List<PostComment> GetListOfComment(int PostID)
+        {
+            List<PostComment> list = new List<PostComment>();
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query = "SELECT * FROM PostComment WHERE PostID=@PostID";
+            var command = new SqlCommand(query, conn);
+            command.Parameters.AddWithValue("PostID", PostID);
+            conn.Open();
+            var reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    list.Add(new PostComment()
+                    {
+                        ID = (int)reader["ID"],
+                        UserEmail = reader["UserEmail"].ToString(),
+                        Content = reader["Content"].ToString(),
+                        PostID = (int)reader["PostID"],
+                        Time = (DateTime)reader["Time"]
+                    });
+                }
+                reader.Close();
+            }
+            conn.Close();
+            return list;
+        }
+        public DbSet<AlrightSocialWebApp.Models.Notification> Notification { get; set; }
     }
 }

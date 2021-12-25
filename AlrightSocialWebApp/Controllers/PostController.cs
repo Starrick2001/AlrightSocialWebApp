@@ -24,11 +24,11 @@ namespace AlrightSocialWebApp.Controllers
         }
 
         // GET: Post
-        [Route("index")]
+        [Route("ManagePostPage")]
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> ManagePostPage()
         {
-            return View(await _context.Post.ToListAsync());
+            return View(_context.GetListOfPost(HttpContext.Session.GetString("email")));
         }
 
         // GET: Post/Details/5
@@ -48,6 +48,7 @@ namespace AlrightSocialWebApp.Controllers
             dynamic mymodel = new ExpandoObject();
             mymodel.Post = _context.GetPostInformation(id);
             mymodel.Author = author;
+            mymodel.Comment = _context.GetListOfComment(id);
             return View(mymodel);
         }
 
@@ -74,7 +75,7 @@ namespace AlrightSocialWebApp.Controllers
                 post.Author = HttpContext.Session.GetString("email");
                 int count = _context.CreatePost(post);
             }
-            return RedirectToAction("Index","Post");
+            return RedirectToAction("ManagePostPage", "Post");
         }
 
         // GET: Post/Edit/5
@@ -128,7 +129,7 @@ namespace AlrightSocialWebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(post);
+            return RedirectToAction("DetailedPostPage", "Post", new { id = post.ID });
         }
 
         // GET: Post/Delete/5
@@ -156,12 +157,17 @@ namespace AlrightSocialWebApp.Controllers
         [Route("delete")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var post = await _context.Post.FindAsync(id);
+            var comments = _context.PostComment.Where(m => m.PostID == post.ID);
+            foreach (var item in comments)
+            {
+                var result = new PostCommentController().Delete(item.ID);
+            }
             _context.Post.Remove(post);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("ManagePostPage", "Post");
         }
 
         private bool PostExists(int id)
@@ -179,7 +185,7 @@ namespace AlrightSocialWebApp.Controllers
                 Directory.CreateDirectory(str);
             }
             var fileName = DateTime.Now.ToString("yyyyMMddHHmmss") + upload.FileName;
-            var path = Path.Combine(Directory.GetCurrentDirectory(), hostingEnvironment.WebRootPath,"uploads", HttpContext.Session.GetString("email"), fileName);
+            var path = Path.Combine(Directory.GetCurrentDirectory(), hostingEnvironment.WebRootPath, "uploads", HttpContext.Session.GetString("email"), fileName);
             var stream = new FileStream(path, FileMode.Create);
             upload.CopyToAsync(stream);
             return new JsonResult(new

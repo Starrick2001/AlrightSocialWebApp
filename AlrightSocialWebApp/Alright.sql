@@ -129,4 +129,4 @@ FROM Post
 	FROM PostShare
 	GROUP BY PostShare.PostID) ShareTable
 	ON Post.ID=ShareTable.PostID
-WHERE Author = 'lebuidihoa257@gmail.com'
+WHERE Post.ID=10

@@ -6,7 +6,7 @@ namespace AlrightSocialWebApp.Models
     public class Notification
     {
         [Key]
-        public int Id { get; set; }
+        public int ID { get; set; }
         [Required]
         public string UserEmail { get; set; }
         public string Content { get; set; }

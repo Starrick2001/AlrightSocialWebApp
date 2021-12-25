@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Http;
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = @Html.Raw(@Model.Post.GetType().GetProperty("Title").GetValue(Model.Post, null));
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <head>
@@ -20,6 +20,24 @@
                         <p class="username">@Model.Author.name</p>
                     </div>
                     <img src="img/option.PNG" class="options" alt="">
+                    @if (String.Compare(Context.Session.GetString("email"), @Model.Post.GetType().GetProperty("Author").GetValue(Model.Post, null).ToString()) == 0)
+                    {
+                        <button class="project-btn-more" id="more-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical">
+                                <circle cx="12" cy="12" r="1" />
+                                <circle cx="12" cy="5" r="1" />
+                                <circle cx="12" cy="19" r="1" />
+                            </svg>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="more-btn">
+
+                            <form asp-controller="Post" asp-action="Delete" asp-route-id="@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)" method="post">
+                                <button type="submit" class="dropdown-item">Xoá</button>
+                            </form>
+                            <a class="dropdown-item" href="/post/edit?id=@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)">Sửa</a>
+
+                        </div>
+                    }
                 </div>
                 <h3 class="text-center">@Html.Raw(@Model.Post.GetType().GetProperty("Title").GetValue(Model.Post, null))</h3>
                 <div class="m-4">
@@ -48,17 +66,45 @@
                             @Model.Post.GetType().GetProperty("Share").GetValue(Model.Post, null)
                         </a>
                     </div>
-                    <p class="likes">1,012 likes</p>
-                    <p class="description"><span>username </span> Lorem ipsum dolor sit amet consectetur, adipisicing elit. Pariatur tenetur veritatis placeat, molestiae impedit aut provident eum quo natus molestias?</p>
-                    <p class="post-time">2 minutes ago</p>
+                    @foreach (var comment in Model.Comment)
+                    {
+                        <div class="row">
+
+                            <div class="col-11">
+                                <p class="description"><span>@comment.UserEmail </span> @comment.Content</p>
+                                <p class="post-time">@comment.Time</p>
+                            </div>
+                            @if (Context.Session.GetString("email") == comment.UserEmail)
+                            {
+                                <button class="project-btn-more col" id="more-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical">
+                                        <circle cx="12" cy="12" r="1" />
+                                        <circle cx="12" cy="5" r="1" />
+                                        <circle cx="12" cy="19" r="1" />
+                                    </svg>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="more-btn">
+                                    <form asp-controller="PostComment" asp-action="Delete" asp-route-id="@comment.ID" method="post">
+                                        <button type="submit" class="dropdown-item">Xoá</button>
+                                    </form>
+                                    <form asp-controller="PostComment" asp-action="Edit" asp-route-id="@comment.ID" method="get">
+                                        <button type="submit" class="dropdown-item">Sửa</button>
+                                    </form>
+                                </div>
+                            }
+                        </div>
+                    }
                 </div>
                 @if (Context.Session.GetString("email") != null)
                 {
-                    <div class="comment-wrapper">
-                        <img src="@Context.Session.GetString("avatarUrl")" class="icon mx-2" alt="" style="border-radius: 50%">
-                        <input type="text" class="comment-box" placeholder="Thêm bình luận">
-                        <button class="comment-btn py-2">Bình luận</button>
-                    </div>
+                    @using (Html.BeginForm("Create", "PostComment", new { PostID = Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null) }, FormMethod.Post))
+                    {
+                        <div class="comment-wrapper">
+                            <img src="@Context.Session.GetString("avatarUrl")" class="icon mx-2" alt="" style="border-radius: 50%">
+                            <input type="text" class="comment-box" name="Content" placeholder="Thêm bình luận">
+                            <button class="comment-btn py-2" type="submit">Bình luận</button>
+                        </div>
+                    }
                 }
             </div>
         </div>

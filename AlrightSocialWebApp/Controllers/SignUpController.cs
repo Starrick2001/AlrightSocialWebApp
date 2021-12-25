@@ -34,7 +34,7 @@ namespace AlrightSocialWebApp.Controllers
                     account.AvatarURL = "/logo/logo_alrightsocial_circle.png";
                     db.Users.Add(account);
                     db.SaveChanges();
-                    return View("~/Views/SignIn/SignInGUI.cshtml");
+                    return RedirectToAction("Index", "SignIn");
                 }
 
             }

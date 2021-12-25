@@ -8,7 +8,7 @@ namespace AlrightSocialWebApp.Models
         public string UserEmail { get; set; }
         [Key]
         public int PostID { get; set; }
-        public int NotificationID { get; set; }
+        public int? NotificationID { get; set; }
 
     }
 }
