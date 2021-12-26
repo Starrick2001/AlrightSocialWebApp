@@ -8,6 +8,14 @@
                 "#fee4cb","#e9e7fd","#ffd3e2","#c8f7dc","#d5deff"
             };
     Random rd = new Random();
+    int sumOfLike = 0;
+    int sumOfShare = 0;
+    foreach (var item in Model)
+    {
+        sumOfLike += (int)item.GetType().GetProperty("Like").GetValue(item, null);
+        sumOfShare += (int)item.GetType().GetProperty("Share").GetValue(item, null);
+    }
+
 }
 
 <div class="projects-section">
@@ -18,19 +26,19 @@
     <div class="projects-section-line">
         <div class="projects-status">
             <div class="item-status">
-                <span class="status-number">45</span>
-                <span class="status-type">In Progress</span>
+                <span class="status-number">@Model.Count</span>
+                <span class="status-type">Bài viết</span>
             </div>
             <div class="item-status">
-                <span class="status-number">24</span>
-                <span class="status-type">Upcoming</span>
+                <span class="status-number">@sumOfLike</span>
+                <span class="status-type">Like</span>
             </div>
             <div class="item-status">
-                <span class="status-number">62</span>
-                <span class="status-type">Total Projects</span>
+                <span class="status-number">@sumOfShare</span>
+                <span class="status-type">Share</span>
             </div>
 
-            
+
 
         </div>
         <div class="view-actions">
@@ -107,7 +115,7 @@
                                     </svg>
                                 </button>
                             </div>*@
-                        <a href="#" class="album-action">
+                        <a href="#" class="album-action @(item.GetType().GetProperty("isLiked") != null ? (item.GetType().GetProperty("isLiked").GetValue(item, null).ToString() == "True" ? "active" : "") : "")">
                             <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                 <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
                             </svg>

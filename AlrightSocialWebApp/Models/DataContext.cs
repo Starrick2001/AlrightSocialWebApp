@@ -100,7 +100,8 @@ namespace AlrightSocialWebApp.Models
                         Privacy = reader["Privacy"].ToString(),
                         Like = (int)reader["Like"],
                         Comment = (int)reader["Comment"],
-                        Share = (int)reader["Share"]
+                        Share = (int)reader["Share"],
+                        isLiked = isLiked((int)reader["ID"], EmailAddress)
                     });
                 }
                 reader.Close();

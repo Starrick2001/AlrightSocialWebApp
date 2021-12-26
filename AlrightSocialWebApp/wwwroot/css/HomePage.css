@@ -946,6 +946,7 @@ button, a {
     align-items: center;
     font-weight: 600;
 }
+
     .album-action:hover {
         margin-right: 20px;
         text-decoration: none;
@@ -954,7 +955,12 @@ button, a {
         align-items: center;
         font-weight: 600;
     }
+
     .album-action svg {
         width: 16px;
         margin-right: 6px;
+    }
+
+    .album-action.active {
+        color: #e51d60;
     }
