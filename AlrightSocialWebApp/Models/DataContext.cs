@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Data.SqlClient;
 using Microsoft.Data.SqlClient;
 using AlrightSocialWebApp.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace AlrightSocialWebApp.Models
 {
@@ -20,6 +21,11 @@ namespace AlrightSocialWebApp.Models
                             .AddJsonFile("appsettings.json");
             var configuration = builder.Build();
             optionsBuilder.UseSqlServer(configuration["ConnectionStrings:DefaultConnection"]);
+        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<PostLike>()
+                .HasKey(o => new { o.UserEmail, o.PostID });
         }
         public DbSet<User> Users { get; set; }
         public User GetUserInfo(string EmailAddress)
@@ -129,7 +135,8 @@ namespace AlrightSocialWebApp.Models
                         Privacy = reader["Privacy"].ToString(),
                         Like = (int)reader["Like"],
                         Comment = (int)reader["Comment"],
-                        Share = (int)reader["Share"]
+                        Share = (int)reader["Share"],
+                        isLiked = isLiked((int)reader["ID"], EmailAddress)
                     });
                 }
                 reader.Close();
@@ -204,6 +211,28 @@ namespace AlrightSocialWebApp.Models
             conn.Close();
             return post;
         }
+        public bool isLiked(int PostID, string UserEmail)
+        {
+            int temp = 0;
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query = "SELECT COUNT(*) AS [DEM] FROM PostLike WHERE PostID = @PostID AND UserEmail = @UserEmail";
+            var command = new SqlCommand(query, conn);
+            command.Parameters.AddWithValue("PostID", PostID);
+            command.Parameters.AddWithValue("UserEmail", UserEmail);
+            conn.Open();
+            var reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    temp = (int)reader["DEM"];
+                }
+            }
+            if (temp > 0)
+                return true;
+            else return false;
+        }
         public DbSet<AlrightSocialWebApp.Models.PostComment> PostComment { get; set; }
         public void CreateComment(PostComment cmt)
         {
@@ -223,11 +252,12 @@ namespace AlrightSocialWebApp.Models
             SqlConnection conn = new SqlConnection();
             conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
 
-            string query1 = "INSERT INTO Notification (UserEmail, Content, Time, isRead) VALUES (@UserEmail, @Content, @Time, 'false')";
+            string query1 = "INSERT INTO Notification (UserEmail, Content, Time, isRead, PostID) VALUES (@UserEmail, @Content, @Time, 'false', @PostID)";
             SqlCommand cmd1 = new SqlCommand(query1, conn);
             cmd1.Parameters.AddWithValue("@UserEmail", post.Author);
             cmd1.Parameters.AddWithValue("@Content", cmt.UserEmail + " đã bình luận về bài viết của bạn.");
             cmd1.Parameters.AddWithValue("@Time", DateTime.Now);
+            cmd1.Parameters.AddWithValue("@PostID", cmt.PostID);
             conn.Open();
             cmd1.ExecuteNonQuery();
             int numberofnotification = -1;
@@ -249,6 +279,52 @@ namespace AlrightSocialWebApp.Models
             cmd2.Parameters.AddWithValue("@UserEmail", cmt.UserEmail);
             cmd2.Parameters.AddWithValue("@Content", cmt.Content);
             cmd2.Parameters.AddWithValue("@Time", DateTime.Now);
+            cmd2.Parameters.AddWithValue("@NotificationID", numberofnotification);
+            conn.Open();
+            cmd2.ExecuteNonQuery();
+        }
+
+        public void InsertLike(PostLike like)
+        {
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query2 = "INSERT INTO PostLike (PostID, UserEmail) VALUES (@PostID, @UserEmail)";
+            SqlCommand cmd2 = new SqlCommand(query2, conn);
+            cmd2.Parameters.AddWithValue("@PostID", like.PostID);
+            cmd2.Parameters.AddWithValue("@UserEmail", like.UserEmail);
+            conn.Open();
+            cmd2.ExecuteNonQuery();
+        }
+        public void InsertLike(PostLike like, string UserEmail)
+        {
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+
+            string query1 = "INSERT INTO Notification (UserEmail, Content, Time, isRead, PostID) VALUES (@UserEmail, @Content, @Time, 'false', @PostID)";
+            SqlCommand cmd1 = new SqlCommand(query1, conn);
+            cmd1.Parameters.AddWithValue("@UserEmail", UserEmail);
+            cmd1.Parameters.AddWithValue("@Content", like.UserEmail + " đã thích về bài viết của bạn.");
+            cmd1.Parameters.AddWithValue("@Time", DateTime.Now);
+            cmd1.Parameters.AddWithValue("@PostID", like.PostID);
+            conn.Open();
+            cmd1.ExecuteNonQuery();
+            int numberofnotification = -1;
+            string getnumberofnotification = "SELECT ISNULL(MAX(ID),0) AS [NUMBER] FROM NOTIFICATION";
+            SqlCommand command = new SqlCommand(getnumberofnotification, conn);
+            var reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    numberofnotification = (int)reader["NUMBER"];
+                }
+                reader.Close();
+            }
+            conn.Close();
+            string query2 = "INSERT INTO PostLike (PostID, UserEmail, NotificationID) VALUES (@PostID, @UserEmail, @NotificationID)";
+            SqlCommand cmd2 = new SqlCommand(query2, conn);
+            cmd2.Parameters.AddWithValue("@PostID", like.PostID);
+            cmd2.Parameters.AddWithValue("@UserEmail", like.UserEmail);
             cmd2.Parameters.AddWithValue("@NotificationID", numberofnotification);
             conn.Open();
             cmd2.ExecuteNonQuery();
@@ -283,5 +359,6 @@ namespace AlrightSocialWebApp.Models
             return list;
         }
         public DbSet<AlrightSocialWebApp.Models.Notification> Notification { get; set; }
+        public DbSet<AlrightSocialWebApp.Models.PostLike> PostLike { get; set; }
     }
 }

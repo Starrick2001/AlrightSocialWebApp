@@ -41,9 +41,11 @@ CREATE TABLE Notification (
 	ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
 	UserEmail NVARCHAR(255) NOT NULL,
 	Content NVARCHAR(MAX),
+	PostID int NOT NULL,
 	Time DATETIME,
 	IsRead BIT,
-	FOREIGN KEY (UserEmail) REFERENCES Users(EmailAddress)
+	FOREIGN KEY (UserEmail) REFERENCES Users(EmailAddress),
+	FOREIGN KEY (PostID) REFERENCES Post(ID)
 )
 
 CREATE TABLE PostLike (

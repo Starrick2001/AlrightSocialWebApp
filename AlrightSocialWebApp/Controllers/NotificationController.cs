@@ -118,6 +118,17 @@ namespace AlrightSocialWebApp.Controllers
             }
             return View(notification);
         }
+        [HttpGet]
+        public async Task<IActionResult> MarkAsReadAndGoToPost(int id)
+        {
+            var notification = await _context.Notification
+                .FirstOrDefaultAsync(m => m.ID == id);
+            int PostID = notification.PostID;
+            notification.IsRead = true;
+            _context.Update(notification);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("DetailedPostPage", "Post", new { id = PostID });
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]

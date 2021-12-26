@@ -27,28 +27,30 @@
         @foreach (var item in Model)
         {
             <div class="messages">
-                <div class="message-box" @(item.IsRead == false ? "style = background-color:rgb(176,224,230,0.5)" : "") >
-                    <div class="message-content">
-                        <div class="message-header">
-                            <div class="name">@item.Content</div>
-                            <button class="project-btn-more" id="more-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical">
-                                    <circle cx="12" cy="12" r="1" />
-                                    <circle cx="12" cy="5" r="1" />
-                                    <circle cx="12" cy="19" r="1" />
-                                </svg>
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="more-btn">
-                                <form asp-controller="Notification" asp-action="MarkAsRead" asp-route-id="@item.ID" method="post">
-                                    <button type="submit" class="dropdown-item">Đánh dấu là đã đọc</button>
-                                </form>
+                <a href="/Notification/MarkAsReadAndGoToPost?id=@item.ID">
+                    <div class="message-box" @(item.IsRead == false ? "style = background-color:rgb(176,224,230,0.5)" : "")>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <div class="name">@item.Content</div>
+                                <button class="project-btn-more" id="more-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical">
+                                        <circle cx="12" cy="12" r="1" />
+                                        <circle cx="12" cy="5" r="1" />
+                                        <circle cx="12" cy="19" r="1" />
+                                    </svg>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="more-btn">
+                                    <form asp-controller="Notification" asp-action="MarkAsRead" asp-route-id="@item.ID" method="post">
+                                        <button type="submit" class="dropdown-item">Đánh dấu là đã đọc</button>
+                                    </form>
+                                </div>
                             </div>
+                            <p class="message-line time">
+                                @item.Time;
+                            </p>
                         </div>
-                        <p class="message-line time">
-                            @item.Time;
-                        </p>
                     </div>
-                </div>
+                </a>
             </div>
         }
     </div>

@@ -47,6 +47,7 @@ namespace AlrightSocialWebApp.Controllers
             }
             dynamic mymodel = new ExpandoObject();
             mymodel.Post = _context.GetPostInformation(id);
+            mymodel.isLiked = _context.isLiked(mymodel.Post.GetType().GetProperty("ID").GetValue(mymodel.Post, null), HttpContext.Session.GetString("email"));
             mymodel.Author = author;
             mymodel.Comment = _context.GetListOfComment(id);
             return View(mymodel);

@@ -1,12 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AlrightSocialWebApp.Models
 {
     public class PostLike
     {
-        [Key]
+        [Required]
         public string UserEmail { get; set; }
-        [Key]
+        [Required]
         public int PostID { get; set; }
         public int? NotificationID { get; set; }
 
