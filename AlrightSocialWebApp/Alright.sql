@@ -49,7 +49,7 @@ CREATE TABLE Notification (
 CREATE TABLE PostLike (
 	UserEmail NVARCHAR(255) NOT NULL,
 	PostID int NOT NULL,
-	NotificationID int NOT NULL,
+	NotificationID int,
 	PRIMARY KEY (UserEmail, PostID),
 	FOREIGN KEY (UserEmail) REFERENCES Users(EmailAddress),
 	FOREIGN KEY (PostID) REFERENCES Post(ID),
@@ -61,7 +61,8 @@ CREATE TABLE PostShare (
 	UserEmail NVARCHAR(255) NOT NULL,
 	PostID int NOT NULL,
 	Privacy NVARCHAR(255),
-	NotificationID int NOT NULL,
+	NotificationID int,
+	Time Datetime,
 	FOREIGN KEY (UserEmail) REFERENCES Users(EmailAddress),
 	FOREIGN KEY (PostID) REFERENCES Post(ID),
 	FOREIGN KEY (NotificationID) REFERENCES Notification(ID)
@@ -72,7 +73,8 @@ CREATE TABLE PostComment (
 	UserEmail NVARCHAR(255) NOT NULL,
 	PostID INT NOT NULL,
 	Content NVARCHAR(MAX),
-	NotificationID int NOT NULL,
+	NotificationID int,
+	Time Datetime,
 	FOREIGN KEY (UserEmail) REFERENCES Users(EmailAddress),
 	FOREIGN KEY (PostID) REFERENCES Post(ID),
 	FOREIGN KEY (NotificationID) REFERENCES Notification(ID)
@@ -81,7 +83,7 @@ CREATE TABLE PostComment (
 CREATE TABLE CommentLike (
 	UserEmail NVARCHAR(255) NOT NULL,
 	CmtID int NOT NULL,
-	NotificationID INT NOT NULL,
+	NotificationID INT,
 	FOREIGN KEY (UserEmail) REFERENCES Users(EmailAddress),
 	FOREIGN KEY (CmtID) REFERENCES PostComment(ID),
 	FOREIGN KEY (NotificationID) REFERENCES Notification(ID)
@@ -130,3 +132,28 @@ FROM Post
 	GROUP BY PostShare.PostID) ShareTable
 	ON Post.ID=ShareTable.PostID
 WHERE Post.ID=10
+
+SELECT ISNULL(MAX(ID),0) AS [NUMBER] FROM NOTIFICATION
+SELECT * FROM PostComment WHERE PostID=10
+
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, Users.AvatarURL, Users.name, ISNULL(LikeTable.[Like],0) AS [Like] , ISNULL(CommentTable.[Comment],0) AS [Comment], ISNULL(ShareTable.[Share],0) AS [Share] 
+FROM Post 
+LEFT JOIN 
+(SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] 
+FROM PostLike 
+GROUP BY PostLike.PostID) LikeTable 
+ON LikeTable.ID = Post.ID 
+LEFT JOIN 
+(SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] 
+FROM PostComment 
+GROUP BY PostComment.PostID) CommentTable 
+ON Post.ID = CommentTable.PostID 
+LEFT JOIN 
+(SELECT PostID, COUNT(UserEmail) AS [Share] 
+FROM PostShare 
+GROUP BY PostShare.PostID) ShareTable 
+ON Post.ID = ShareTable.PostID
+INNER JOIN 
+Users
+ON Post.Author=Users.EmailAddress
+WHERE Post.Privacy='Public'

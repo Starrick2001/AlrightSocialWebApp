@@ -23,7 +23,7 @@ namespace AlrightSocialWebApp.Controllers
             var account = checkAccount(EmailAddress, Password);
             if (account == null)
             {
-                ViewBag.error = "Sai địa chỉ Email hoặc mật khẩu";
+                ViewBag.error = "Sai mật khẩu";
                 return View("SignInGUI");
             }
             else

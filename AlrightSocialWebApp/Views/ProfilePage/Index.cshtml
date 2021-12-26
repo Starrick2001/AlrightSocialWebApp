@@ -33,7 +33,9 @@
 
                     <div class="profile-menu">
                         <button class="profile-menu-link active">Bài viết</button>
-                        <button class="profile-menu-link">Thông tin</button>
+                        <a href="/ProfilePage/Information?EmailAddress=@Context.Session.GetString("email")">
+                            <button class="profile-menu-link">Thông tin</button>
+                        </a>
                         <button class="profile-menu-link">Danh sách bạn bè</button>
                     </div>
                 </div>
@@ -113,7 +115,7 @@
                                             <circle cx="12" cy="19" r="1" />
                                         </svg>
                                     </button>
-                                    
+
                                     <div class="dropdown-menu" aria-labelledby="more-btn">
                                         <a class="dropdown-item" href="/post/DetailedPostPage?id=@post.GetType().GetProperty("ID").GetValue(post, null)">Xem chi tiết</a>
                                         <form asp-controller="Post" asp-action="Delete" asp-route-id="@post.GetType().GetProperty("ID").GetValue(post, null)" method="post">

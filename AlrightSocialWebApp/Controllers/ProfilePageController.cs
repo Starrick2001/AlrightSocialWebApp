@@ -20,11 +20,9 @@ namespace AlrightSocialWebApp.Controllers
         {
             this.hostingEnvironment = hostingEnvironment;
         }
-
         [HttpGet]
         public IActionResult Index(string EmailAddress)
         {
-            
             User user = db.GetUserInfo(EmailAddress);
             ViewData.Model = user;
             List<object> postlist = db.GetListOfPost(EmailAddress);
@@ -33,6 +31,14 @@ namespace AlrightSocialWebApp.Controllers
             mymodel.Posts = postlist;
             return View(mymodel);
         }
+        [Route("Information")]
+        [HttpGet]
+        public IActionResult Information(string EmailAddress)
+        {
+            User user = db.GetUserInfo(EmailAddress);
+            return View(user);
+        }
+
         [HttpPost]
         public IActionResult UploadAvatar([FromForm(Name = "avatar")] IFormFile avatar)
         {

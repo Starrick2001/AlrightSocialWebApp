@@ -6,25 +6,29 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AlrightSocialWebApp.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace AlrightSocialWebApp.Controllers
 {
     public class NotificationController : Controller
     {
-        private readonly DataContext _context;
+        private readonly DataContext _context = new DataContext();
 
-        public NotificationController(DataContext context)
-        {
-            _context = context;
-        }
-
-        // GET: Notifications
+        // GET: Notification
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Notification.ToListAsync());
+            var notification = _context.Notification
+                .Where(x => x.UserEmail == HttpContext.Session.GetString("email"))
+                .OrderByDescending(y=>y.Time);
+            List<Notification> list = new List<Notification>();
+            foreach (var item in notification)
+            {
+                list.Add(item);
+            }
+            return View(list);
         }
 
-        // GET: Notifications/Details/5
+        // GET: Notification/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -42,18 +46,18 @@ namespace AlrightSocialWebApp.Controllers
             return View(notification);
         }
 
-        // GET: Notifications/Create
+        // GET: Notification/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Notifications/Create
+        // POST: Notification/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserEmail,Content,Time,IsRead")] Notification notification)
+        public async Task<IActionResult> Create([Bind("ID,UserEmail,Content,Time,IsRead")] Notification notification)
         {
             if (ModelState.IsValid)
             {
@@ -64,7 +68,7 @@ namespace AlrightSocialWebApp.Controllers
             return View(notification);
         }
 
-        // GET: Notifications/Edit/5
+        // GET: Notification/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -80,12 +84,12 @@ namespace AlrightSocialWebApp.Controllers
             return View(notification);
         }
 
-        // POST: Notifications/Edit/5
+        // POST: Notification/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,UserEmail,Content,Time,IsRead")] Notification notification)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,UserEmail,Content,Time,IsRead")] Notification notification)
         {
             if (id != notification.ID)
             {
@@ -115,7 +119,39 @@ namespace AlrightSocialWebApp.Controllers
             return View(notification);
         }
 
-        // GET: Notifications/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkAsRead(int id)
+        {
+            var notification = await _context.Notification
+                .FirstOrDefaultAsync(m => m.ID == id);
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    notification.IsRead = true;
+                    _context.Update(notification);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!NotificationExists(notification.ID))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View("Index");
+        }
+
+
+        // GET: Notification/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -133,7 +169,7 @@ namespace AlrightSocialWebApp.Controllers
             return View(notification);
         }
 
-        // POST: Notifications/Delete/5
+        // POST: Notification/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
