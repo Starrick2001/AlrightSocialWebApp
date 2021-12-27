@@ -29,6 +29,11 @@ namespace AlrightSocialWebApp.Controllers
             dynamic mymodel = new ExpandoObject();
             mymodel.User = user;
             mymodel.Posts = postlist;
+            if (HttpContext.Session.GetString("email") != null)
+            {
+                mymodel.isFriended = db.isFriended(HttpContext.Session.GetString("email"), EmailAddress);
+                mymodel.isBlocked = db.isBlocked(HttpContext.Session.GetString("email"), EmailAddress);
+            }
             return View(mymodel);
         }
         [Route("Information")]
@@ -38,7 +43,7 @@ namespace AlrightSocialWebApp.Controllers
             User user = db.GetUserInfo(EmailAddress);
             return View(user);
         }
-        
+
 
         [HttpPost]
         public IActionResult UploadAvatar([FromForm(Name = "avatar")] IFormFile avatar)

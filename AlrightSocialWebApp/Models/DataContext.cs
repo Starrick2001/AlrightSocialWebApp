@@ -257,12 +257,34 @@ namespace AlrightSocialWebApp.Models
                 return true;
             else return false;
         }
+        public bool isBlocked(string UserEmail, string BlockedUser)
+        {
+            int temp = 0;
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query = "SELECT COUNT(*) AS [DEM] FROM BlockedEmail WHERE UserEmail = @UserEmail AND BlockedUser = @BlockedUser";
+            var command = new SqlCommand(query, conn);
+            command.Parameters.AddWithValue("UserEmail", UserEmail);
+            command.Parameters.AddWithValue("BlockedUser", BlockedUser);
+            conn.Open();
+            var reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    temp = (int)reader["DEM"];
+                }
+            }
+            if (temp > 0)
+                return true;
+            else return false;
+        }
         public bool isFriended(string UserEmail, string FriendEmail)
         {
             int temp = 0;
             SqlConnection conn = new SqlConnection();
             conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
-            string query = "SELECT COUNT(*) AS [DEM] FROM Friend WHERE UserEmail = @UserEmail AND FriendEmail=@FriendEmail";
+            string query = "SELECT COUNT(*) AS [DEM] FROM (SELECT FriendEmail FROM Friend WHERE UserEmail = @UserEmail AND FriendEmail=@FriendEmail UNION SELECT FriendEmail FROM FriendRequest WHERE FriendEmail = @UserEmail AND UserEmail=@FriendEmail) AS [A]";
             var command = new SqlCommand(query, conn);
             command.Parameters.AddWithValue("UserEmail", UserEmail);
             command.Parameters.AddWithValue("FriendEmail", FriendEmail);

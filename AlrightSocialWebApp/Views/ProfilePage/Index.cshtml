@@ -49,13 +49,29 @@
                         }
                         else
                         {
-                            @using (Html.BeginForm("InsertFriendRequest", "FriendRequest", new { UserEmail = Model.User.EmailAddress }, FormMethod.Post))
+                            @if (Context.Session.GetString("email") != null)
                             {
-                                <button class="profile-menu-link">Kết bạn</button>
-                            }
-                            @using (Html.BeginForm("InsertBlockedEmail", "BlockedEmail", new { BlockedUser = Model.User.EmailAddress }, FormMethod.Post))
-                            {
-                                <button class="profile-menu-link">Chặn</button>
+                                @if (Model.isFriended.ToString() == "False")
+                                {
+                                    @using (Html.BeginForm("InsertFriendRequest", "FriendRequest", new { UserEmail = Model.User.EmailAddress }, FormMethod.Post))
+                                    {
+                                        <button class="profile-menu-link">Kết bạn</button>
+                                    }
+                                }
+                                @if (Model.isBlocked.ToString() == "False")
+                                {
+                                    @using (Html.BeginForm("InsertBlockedEmail", "BlockedEmail", new { BlockedUser = Model.User.EmailAddress }, FormMethod.Post))
+                                    {
+                                        <button class="profile-menu-link">Chặn</button>
+                                    }
+                                }
+                                else
+                                {
+                                    @using (Html.BeginForm("DeleteBlockedEmail", "BlockedEmail", new { BlockedUser = Model.User.EmailAddress }, FormMethod.Post))
+                                    {
+                                        <button class="profile-menu-link">Bỏ chặn</button>
+                                    }
+                                }
                             }
                         }
                     </div>
