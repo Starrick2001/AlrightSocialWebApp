@@ -59,7 +59,13 @@ namespace AlrightSocialWebApp.Controllers
         }
         public void InsertFriend(Friend friend)
         {
+            Friend friend1 = new Friend()
+            {
+                UserEmail = friend.FriendEmail,
+                FriendEmail = friend.UserEmail
+            };
             _context.Add(friend);
+            _context.Add(friend1);
             _context.SaveChangesAsync();
         }
 
@@ -154,8 +160,9 @@ namespace AlrightSocialWebApp.Controllers
         public async Task<IActionResult> DeleteFriend(string EmailAddress)
         {
             var friend = await _context.Friend.FirstOrDefaultAsync(m => m.UserEmail == HttpContext.Session.GetString("email") && m.FriendEmail == EmailAddress);
-            
+            var friend1 = await _context.Friend.FirstOrDefaultAsync(m => m.FriendEmail == HttpContext.Session.GetString("email") && m.UserEmail == EmailAddress);
             _context.Friend.Remove(friend);
+            _context.Friend.Remove(friend1);
             await _context.SaveChangesAsync();
             return RedirectToAction("ManageFriendGUI");
         }

@@ -18,11 +18,25 @@ namespace AlrightSocialWebApp.Controllers
             List<FriendRequest> list = _context.GetListOfFriendRequests(HttpContext.Session.GetString("email"));
             return View(list);
         }
+        [HttpPost, ActionName("InsertFriendRequest")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> InsertFriendRequest(string UserEmail)
+        {
+            FriendRequest friendRequest = new FriendRequest()
+            {
+                FriendEmail = HttpContext.Session.GetString("email"),
+                UserEmail = UserEmail,
+                Time = DateTime.Now
+            };
+            _context.FriendRequest.Add(friendRequest);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index", "ProfilePage", new { EmailAddress = UserEmail });
+        }
 
         // POST: FriendRequest/Delete/5
         [HttpPost, ActionName("DeclineFriendRequest")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeclineFriendRequest( string FriendEmail)
+        public async Task<IActionResult> DeclineFriendRequest(string FriendEmail)
         {
             var friendRequest = await _context.FriendRequest.FirstOrDefaultAsync(m => m.UserEmail == HttpContext.Session.GetString("email") && m.FriendEmail == FriendEmail);
             _context.FriendRequest.Remove(friendRequest);

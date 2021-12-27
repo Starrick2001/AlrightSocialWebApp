@@ -25,7 +25,7 @@ namespace AlrightSocialWebApp.Controllers
         {
             User user = db.GetUserInfo(EmailAddress);
             ViewData.Model = user;
-            List<object> postlist = db.GetListOfPost(EmailAddress);
+            List<object> postlist = db.GetListOfPost(EmailAddress, HttpContext.Session.GetString("email"));
             dynamic mymodel = new ExpandoObject();
             mymodel.User = user;
             mymodel.Posts = postlist;

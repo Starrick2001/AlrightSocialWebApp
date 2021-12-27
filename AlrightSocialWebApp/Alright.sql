@@ -163,3 +163,70 @@ WHERE Post.Privacy='Public'
 SELECT COUNT(*) AS [DEM]
 FROM PostLike
 WHERE PostID=12 AND UserEmail='lebuidihoa257@gmail.com'
+
+SELECT * FROM Friend WHERE UserEmail='lebuidihoa257@gmail.com'
+SELECT FriendEmail, Time FROM FriendRequest WHERE UserEmail='lebuidihoa257@gmail.com'
+
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, Users.AvatarURL, Users.name, ISNULL(LikeTable.[Like], 0) AS[Like] , ISNULL(CommentTable.[Comment], 0) AS[Comment], ISNULL(ShareTable.[Share], 0) AS[Share] 
+FROM 
+(SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy FROM Post WHERE Author=@EmailAddress AND Privacy='Public'
+UNION 
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy 
+FROM Post 
+WHERE Privacy='Friend' AND Author IN (SELECT FriendEmail FROM Friend WHERE UserEmail=@CurrentEmail)) AS [Post]
+LEFT JOIN 
+(SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] 
+FROM PostLike 
+GROUP BY PostLike.PostID) LikeTable 
+ON LikeTable.ID = Post.ID 
+LEFT JOIN 
+(SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] 
+FROM PostComment 
+GROUP BY PostComment.PostID) CommentTable 
+ON Post.ID = CommentTable.PostID 
+LEFT JOIN 
+(SELECT PostID, COUNT(UserEmail) AS [Share] 
+FROM PostShare GROUP BY PostShare.PostID) ShareTable 
+ON Post.ID = ShareTable.PostID 
+INNER JOIN Users 
+ON Post.Author = Users.EmailAddress 
+ORDER BY Post.TimeCreate DESC
+
+
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy 
+FROM Post 
+WHERE Privacy!='Only Me' AND Author IN (SELECT FriendEmail FROM Friend WHERE UserEmail='lebuidihoa257@gmail.com')
+
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, Users.AvatarURL, Users.name, ISNULL(LikeTable.[Like], 0) AS[Like] , ISNULL(CommentTable.[Comment], 0) AS[Comment], ISNULL(ShareTable.[Share], 0) AS[Share]  
+FROM
+(SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy 
+FROM Post 
+WHERE Author = @EmailAddress 
+UNION 
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy 
+FROM Post 
+WHERE Privacy = 'Friend' AND Author IN(SELECT FriendEmail FROM Friend WHERE UserEmail = @EmailAddress) 
+UNION 
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy 
+FROM Post 
+WHERE Privacy = 'Public' AND Author Not IN (SELECT BlockedUser FROM BlockedEmail WHERE UserEmail=@EmailAddress)) AS[Post] 
+LEFT JOIN 
+(SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] 
+FROM PostLike 
+GROUP BY PostLike.PostID) LikeTable 
+ON LikeTable.ID = Post.ID 
+LEFT JOIN 
+(SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] 
+FROM PostComment 
+GROUP BY PostComment.PostID) CommentTable 
+ON Post.ID = CommentTable.PostID 
+LEFT JOIN 
+(SELECT PostID, COUNT(UserEmail) AS [Share] 
+FROM PostShare 
+GROUP BY PostShare.PostID) ShareTable 
+ON Post.ID = ShareTable.PostID 
+INNER JOIN Users 
+ON Post.Author = Users.EmailAddress 
+ORDER BY Post.TimeCreate DESC
+
+SELECT COUNT(*) AS [DEM] FROM Friend WHERE UserEmail = 'lebuidihoa257@gmail.com' AND FriendEmail='asdff@gmail.com'

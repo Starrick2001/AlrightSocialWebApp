@@ -28,7 +28,7 @@ namespace AlrightSocialWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> ManagePostPage()
         {
-            return View(_context.GetListOfPost(HttpContext.Session.GetString("email")));
+            return View(_context.GetListOfPost(HttpContext.Session.GetString("email"), HttpContext.Session.GetString("email")));
         }
 
         // GET: Post/Details/5
@@ -81,7 +81,7 @@ namespace AlrightSocialWebApp.Controllers
         }
 
         // GET: Post/Edit/5
-        [Route("edit")]
+        [Route("Edit")]
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -104,13 +104,8 @@ namespace AlrightSocialWebApp.Controllers
         [Route("edit")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Title,Content,TimeCreate,TimeModified,Author,Privacy,ImageURL")] Post post)
+        public async Task<IActionResult> Edit(Post post)
         {
-            if (id != post.ID)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 try
@@ -129,7 +124,7 @@ namespace AlrightSocialWebApp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("DetailedPostPage", "Post", new { id = post.ID });
             }
             return RedirectToAction("DetailedPostPage", "Post", new { id = post.ID });
         }

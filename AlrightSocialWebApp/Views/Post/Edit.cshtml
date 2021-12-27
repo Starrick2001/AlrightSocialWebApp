@@ -9,7 +9,7 @@
     <script src="~/ckeditor/ckeditor.js"></script>
     
 </head>
-<form asp-action="Edit">
+<form method="Post" asp-action="Edit">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="ID" />
     <div class="form-group">

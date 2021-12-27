@@ -4,7 +4,7 @@ namespace AlrightSocialWebApp.Models
 {
     public class BlockedEmail
     {
-        [Key]
+        [Required]
         public string UserEmail { get; set; }
         [Required]
         public string BlockedUser { get; set; }

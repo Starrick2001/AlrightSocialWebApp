@@ -47,6 +47,17 @@
                                 <button class="profile-menu-link">Danh sách bạn bè</button>
                             </a>
                         }
+                        else
+                        {
+                            @using (Html.BeginForm("InsertFriendRequest", "FriendRequest", new { UserEmail = Model.User.EmailAddress }, FormMethod.Post))
+                            {
+                                <button class="profile-menu-link">Kết bạn</button>
+                            }
+                            @using (Html.BeginForm("InsertBlockedEmail", "BlockedEmail", new { BlockedUser = Model.User.EmailAddress }, FormMethod.Post))
+                            {
+                                <button class="profile-menu-link">Chặn</button>
+                            }
+                        }
                     </div>
                 </div>
                 <div class="timeline h-100">
