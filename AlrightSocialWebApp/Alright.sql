@@ -159,3 +159,7 @@ INNER JOIN
 Users
 ON Post.Author=Users.EmailAddress
 WHERE Post.Privacy='Public'
+
+SELECT COUNT(*) AS [DEM]
+FROM PostLike
+WHERE PostID=12 AND UserEmail='lebuidihoa257@gmail.com'

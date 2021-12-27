@@ -5,9 +5,9 @@ namespace AlrightSocialWebApp.Models
 {
     public class FriendRequest
     {
-        [Key]
+        [Required]
         public string UserEmail { get; set; }
-        [Key]
+        [Required]
         public string FriendEmail { get; set; }
         public DateTime Time { get; set; }
     }

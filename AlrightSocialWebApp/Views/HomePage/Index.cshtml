@@ -15,10 +15,13 @@
                     <div class="left-col">
                         <div class="post">
                             <div class="info">
-                                <div class="user">
-                                    <div class="profile-pic"><img src="@item.GetType().GetProperty("AvatarURL").GetValue(item, null)" alt="" width="40px" height="40px" style="border-radius: 50%"></div>
-                                    <p class="username">@item.GetType().GetProperty("AuthorName").GetValue(item, null)</p>
-                                </div>
+                                <a href="/ProfilePage?EmailAddress=@item.GetType().GetProperty("Author").GetValue(item, null)">
+                                    <div class="user">
+                                        <div class="profile-pic"><img src="@item.GetType().GetProperty("AvatarURL").GetValue(item, null)" alt="" width="40px" height="40px" style="border-radius: 50%"></div>
+                                        <p class="username">@item.GetType().GetProperty("AuthorName").GetValue(item, null)</p>
+
+                                    </div>
+                                </a>
                                 <img src="img/option.PNG" class="options" alt="">
                                 <button class="project-btn-more" id="more-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical">

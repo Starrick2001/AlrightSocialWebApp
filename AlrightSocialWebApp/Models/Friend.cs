@@ -4,9 +4,9 @@ namespace AlrightSocialWebApp.Models
 {
     public class Friend
     {
-        [Key]
+        [Required]
         public string UserEmail { get; set; }
-        [Key]
+        [Required]
         public string FriendEmail { get; set; }
     }
 }

@@ -26,6 +26,10 @@ namespace AlrightSocialWebApp.Models
         {
             modelBuilder.Entity<PostLike>()
                 .HasKey(o => new { o.UserEmail, o.PostID });
+            modelBuilder.Entity<Friend>()
+               .HasKey(o => new { o.UserEmail, o.FriendEmail });
+            modelBuilder.Entity<FriendRequest>()
+               .HasKey(o => new { o.UserEmail, o.FriendEmail });
         }
         public DbSet<User> Users { get; set; }
         public User GetUserInfo(string EmailAddress)
@@ -361,5 +365,52 @@ namespace AlrightSocialWebApp.Models
         }
         public DbSet<AlrightSocialWebApp.Models.Notification> Notification { get; set; }
         public DbSet<AlrightSocialWebApp.Models.PostLike> PostLike { get; set; }
+        public DbSet<AlrightSocialWebApp.Models.Friend> Friend { get; set; }
+        public List<Friend> GetListOfFriends(string EmailAddress)
+        {
+            List<Friend> list = new List<Friend>();
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query = "SELECT FriendEmail FROM Friend WHERE UserEmail=@EmailAddress";
+            var command = new SqlCommand(query, conn);
+            command.Parameters.AddWithValue("EmailAddress", EmailAddress);
+            conn.Open();
+            var reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    list.Add(new Models.Friend()
+                    {
+                        FriendEmail = reader["FriendEmail"].ToString()
+                    });
+                }
+            }
+            return list;
+        }
+        public List<FriendRequest> GetListOfFriendRequests(string EmailAddress)
+        {
+            List<FriendRequest> list = new List<FriendRequest>();
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query = "SELECT FriendEmail, Time FROM FriendRequest WHERE UserEmail=@EmailAddress";
+            var command = new SqlCommand(query, conn);
+            command.Parameters.AddWithValue("EmailAddress", EmailAddress);
+            conn.Open();
+            var reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    list.Add(new Models.FriendRequest()
+                    {
+                        FriendEmail = reader["FriendEmail"].ToString(),
+                        Time = (DateTime)reader["Time"]
+                    });
+                }
+            }
+            return list;
+        }
+        public DbSet<AlrightSocialWebApp.Models.FriendRequest> FriendRequest { get; set; }
     }
 }

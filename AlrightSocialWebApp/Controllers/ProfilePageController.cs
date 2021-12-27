@@ -38,6 +38,7 @@ namespace AlrightSocialWebApp.Controllers
             User user = db.GetUserInfo(EmailAddress);
             return View(user);
         }
+        
 
         [HttpPost]
         public IActionResult UploadAvatar([FromForm(Name = "avatar")] IFormFile avatar)

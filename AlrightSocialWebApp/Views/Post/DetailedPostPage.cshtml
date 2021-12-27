@@ -15,10 +15,12 @@
 
             <div class="post">
                 <div class="info">
-                    <div class="user">
-                        <div class="profile-pic"><img src="@Model.Author.AvatarURL" alt="" width="40px" height="40px" style="border-radius: 50%"></div>
-                        <p class="username">@Model.Author.name</p>
-                    </div>
+                    <a href="/ProfilePage?EmailAddress=@Model.Post.GetType().GetProperty("Author").GetValue(Model.Post, null)">
+                        <div class="user">
+                            <div class="profile-pic"><img src="@Model.Author.AvatarURL" alt="" width="40px" height="40px" style="border-radius: 50%"></div>
+                            <p class="username">@Model.Author.name</p>
+                        </div>
+                    </a>
                     <img src="img/option.PNG" class="options" alt="">
                     @if (String.Compare(Context.Session.GetString("email"), @Model.Post.GetType().GetProperty("Author").GetValue(Model.Post, null).ToString()) == 0)
                     {
@@ -47,28 +49,28 @@
                     <div class="reaction-wrapper">
                         @using (Html.BeginForm("InsertOrDeleteLike", "PostLike", new { PostID = Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null), UserEmail = Model.Post.GetType().GetProperty("Author").GetValue(Model.Post, null) }, FormMethod.Post))
                         {
-                            <button class="btn album-action @(Model.isLiked == true ? "active" : "a")">
+                            <button class="btn album-action @(Context.Session.GetString("email") != null ? (Model.isLiked == true ? "active" : "a") : "")">
                                 <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
                                 </svg>
                                 @Model.Post.GetType().GetProperty("Like").GetValue(Model.Post, null)
                             </button>
                         }
-                            <a href="#" class="album-action">
-                                <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
-                                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-                                </svg>
-                                @Model.Post.GetType().GetProperty("Comment").GetValue(Model.Post, null)
-                            </a>
-                            <a href="#" class="album-action">
-                                <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
-                                    <path d="M17 1l4 4-4 4" />
-                                    <path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4" />
-                                    <path d="M21 13v2a4 4 0 01-4 4H3" />
-                                </svg>
-                                @Model.Post.GetType().GetProperty("Share").GetValue(Model.Post, null)
-                            </a>
-                        </div>
+                        <a href="#" class="album-action">
+                            <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
+                                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                            </svg>
+                            @Model.Post.GetType().GetProperty("Comment").GetValue(Model.Post, null)
+                        </a>
+                        <a href="#" class="album-action">
+                            <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
+                                <path d="M17 1l4 4-4 4" />
+                                <path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4" />
+                                <path d="M21 13v2a4 4 0 01-4 4H3" />
+                            </svg>
+                            @Model.Post.GetType().GetProperty("Share").GetValue(Model.Post, null)
+                        </a>
+                    </div>
                     @foreach (var comment in Model.Comment)
                     {
                         <div class="row">
