@@ -476,5 +476,7 @@ namespace AlrightSocialWebApp.Models
         }
         public DbSet<AlrightSocialWebApp.Models.FriendRequest> FriendRequest { get; set; }
         public DbSet<AlrightSocialWebApp.Models.BlockedEmail> BlockedEmail { get; set; }
+        public DbSet<AlrightSocialWebApp.Models.Message> Message { get; set; }
+        public DbSet<AlrightSocialWebApp.Models.Chat> Chats { get; set; }
     }
 }

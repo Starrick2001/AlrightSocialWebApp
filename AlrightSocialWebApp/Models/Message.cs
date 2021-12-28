@@ -9,9 +9,9 @@ namespace AlrightSocialWebApp.Models
         public int Id { get; set; }
         [Required]
         public string SenderEmail { get; set; }
-        [Required]
-        public string ReceiverEmail { get; set; }
         public DateTime Time { get; set; }
         public string Content { get; set; }
+        public int ChatId { get; set; }
+        public Chat Chat { get; set; }
     }
 }

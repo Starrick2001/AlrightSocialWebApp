@@ -115,6 +115,10 @@ CREATE TABLE SuspendedUser (
 	FOREIGN KEY (SuspendedEmail) REFERENCES Users(EmailAddress)
 )
 
+CREATE TABLE Chats (
+	ID nvarchar(255) NOT NULL PRIMARY KEY
+)
+
 
 SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, ISNULL(LikeTable.[Like],0) AS [Like] , ISNULL(CommentTable.[Comment],0) AS [Comment], ISNULL(ShareTable.[Share],0) AS [Share]
 FROM Post 

@@ -1,3 +1,4 @@
+using AlrightSocialWebApp.Hubs;
 using AlrightSocialWebApp.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,6 +30,7 @@ namespace AlrightSocialWebApp
             services.AddSession();
             services.AddRazorPages()
                 .AddRazorRuntimeCompilation();
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,6 +53,11 @@ namespace AlrightSocialWebApp
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<ChatHub>("/chatHub");
+            });
+
 
             app.UseEndpoints(endpoints =>
             {
