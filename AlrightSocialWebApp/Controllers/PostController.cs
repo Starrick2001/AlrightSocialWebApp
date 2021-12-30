@@ -28,7 +28,10 @@ namespace AlrightSocialWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> ManagePostPage()
         {
-            return View(_context.GetListOfPost(HttpContext.Session.GetString("email"), HttpContext.Session.GetString("email")));
+            dynamic mymodel = new ExpandoObject();
+            mymodel.Posts = _context.GetListOfPost(HttpContext.Session.GetString("email"), HttpContext.Session.GetString("email"));
+            mymodel.Friends = _context.GetListOfFriends(HttpContext.Session.GetString("email"));
+            return View(mymodel);
         }
 
         // GET: Post/Details/5

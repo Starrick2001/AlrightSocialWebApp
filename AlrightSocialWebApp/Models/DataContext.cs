@@ -79,6 +79,7 @@ namespace AlrightSocialWebApp.Models
             cmd.Parameters.AddWithValue("@Privacy", p.Privacy);
             conn.Open();
             return cmd.ExecuteNonQuery();
+            conn.Close();
         }
 
         public List<object> GetListOfPost(string EmailAddress, string CurrentUser)
@@ -253,6 +254,7 @@ namespace AlrightSocialWebApp.Models
                     temp = (int)reader["DEM"];
                 }
             }
+            conn.Close();
             if (temp > 0)
                 return true;
             else return false;
@@ -275,6 +277,7 @@ namespace AlrightSocialWebApp.Models
                     temp = (int)reader["DEM"];
                 }
             }
+            conn.Close();
             if (temp > 0)
                 return true;
             else return false;
@@ -297,9 +300,73 @@ namespace AlrightSocialWebApp.Models
                     temp = (int)reader["DEM"];
                 }
             }
+            conn.Close();
             if (temp > 0)
                 return true;
             else return false;
+        }
+
+        public int findChat(string User1, string User2)
+        {
+            int temp = 0;
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query = "SELECT Id FROM Chats WHERE (User1=@User1 AND User2=@User2) OR (User2=@User1 AND User1=@User2)";
+            var command = new SqlCommand(query, conn);
+            command.Parameters.AddWithValue("User1", User1);
+            command.Parameters.AddWithValue("User2", User2);
+            conn.Open();
+            var reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    temp = (int)reader["Id"];
+                }
+            }
+            conn.Close();
+            return temp;
+        }
+
+        public string findLastMessage(int ChatId)
+        {
+            string temp = "";
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query = "SELECT TOP 1 Content, Time FROM Message WHERE ChatId = @ChatId ORDER By Time DESC";
+            var command = new SqlCommand(query, conn);
+            command.Parameters.AddWithValue("ChatId", ChatId);
+            conn.Open();
+            var reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    temp = reader["Content"].ToString();
+                }
+            }
+            conn.Close();
+            return temp;
+        }
+        public DateTime findLastTime(int ChatId)
+        {
+            DateTime temp = new DateTime();
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query = "SELECT TOP 1 Content, Time FROM Message WHERE ChatId = @ChatId ORDER By Time DESC";
+            var command = new SqlCommand(query, conn);
+            command.Parameters.AddWithValue("ChatId", ChatId);
+            conn.Open();
+            var reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    temp = (DateTime)reader["Time"];
+                }
+            }
+            conn.Close();
+            return temp;
         }
         public DbSet<AlrightSocialWebApp.Models.PostComment> PostComment { get; set; }
         public void CreateComment(PostComment cmt)
@@ -314,6 +381,7 @@ namespace AlrightSocialWebApp.Models
             cmd2.Parameters.AddWithValue("@Time", DateTime.Now);
             conn.Open();
             cmd2.ExecuteNonQuery();
+            conn.Close();
         }
         public void CreateComment(PostComment cmt, Post post)
         {
@@ -350,6 +418,7 @@ namespace AlrightSocialWebApp.Models
             cmd2.Parameters.AddWithValue("@NotificationID", numberofnotification);
             conn.Open();
             cmd2.ExecuteNonQuery();
+            conn.Close();
         }
 
         public void InsertLike(PostLike like)
@@ -362,6 +431,7 @@ namespace AlrightSocialWebApp.Models
             cmd2.Parameters.AddWithValue("@UserEmail", like.UserEmail);
             conn.Open();
             cmd2.ExecuteNonQuery();
+            conn.Close();
         }
         public void InsertLike(PostLike like, string UserEmail)
         {
@@ -396,6 +466,7 @@ namespace AlrightSocialWebApp.Models
             cmd2.Parameters.AddWithValue("@NotificationID", numberofnotification);
             conn.Open();
             cmd2.ExecuteNonQuery();
+            conn.Close();
         }
 
         public List<PostComment> GetListOfComment(int PostID)
@@ -429,12 +500,12 @@ namespace AlrightSocialWebApp.Models
         public DbSet<AlrightSocialWebApp.Models.Notification> Notification { get; set; }
         public DbSet<AlrightSocialWebApp.Models.PostLike> PostLike { get; set; }
         public DbSet<AlrightSocialWebApp.Models.Friend> Friend { get; set; }
-        public List<Friend> GetListOfFriends(string EmailAddress)
+        public List<object> GetListOfFriends(string EmailAddress)
         {
-            List<Friend> list = new List<Friend>();
+            List<object> list = new List<object>();
             SqlConnection conn = new SqlConnection();
             conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
-            string query = "SELECT FriendEmail FROM Friend WHERE UserEmail=@EmailAddress";
+            string query = "SELECT FriendEmail, AvatarURL, name, SignInStatus FROM Friend, Users WHERE UserEmail=@EmailAddress AND FriendEmail=Users.EmailAddress";
             var command = new SqlCommand(query, conn);
             command.Parameters.AddWithValue("EmailAddress", EmailAddress);
             conn.Open();
@@ -443,12 +514,19 @@ namespace AlrightSocialWebApp.Models
             {
                 while (reader.Read())
                 {
-                    list.Add(new Models.Friend()
+                    list.Add(new
                     {
-                        FriendEmail = reader["FriendEmail"].ToString()
+                        FriendEmail = reader["FriendEmail"].ToString(),
+                        AvatarURL = reader["AvatarURL"].ToString(),
+                        name = reader["name"].ToString(),
+                        SignInStatus = reader["SignInStatus"].ToString(),
+                        ChatId = findChat(reader["FriendEmail"].ToString(), EmailAddress),
+                        LastMessage = findLastMessage(findChat(reader["FriendEmail"].ToString(), EmailAddress)),
+                        LastTime = findLastTime(findChat(reader["FriendEmail"].ToString(), EmailAddress))
                     });
                 }
             }
+            conn.Close();
             return list;
         }
         public List<FriendRequest> GetListOfFriendRequests(string EmailAddress)
@@ -472,6 +550,7 @@ namespace AlrightSocialWebApp.Models
                     });
                 }
             }
+            conn.Close();
             return list;
         }
         public DbSet<AlrightSocialWebApp.Models.FriendRequest> FriendRequest { get; set; }

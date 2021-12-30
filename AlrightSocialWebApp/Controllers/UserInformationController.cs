@@ -98,6 +98,8 @@ namespace AlrightSocialWebApp.Controllers
                 account.sex = user.sex;
                 _context.Update(account);
                 await _context.SaveChangesAsync();
+                HttpContext.Session.SetString("name", account.name);
+                HttpContext.Session.SetString("avatarUrl", account.AvatarURL);
                 TempData["success"] = "Thông tin đã được cập nhật";
                 return RedirectToAction("Information", "ProfilePage", new { EmailAddress = HttpContext.Session.GetString("email") });
             }

@@ -100,11 +100,12 @@ html {
 
 .app {
     display: flex;
-    flex-direction: column;
+    flex: 2;
     background-color: var(--theme-bg-color);
     width: 100%;
     margin: 0 auto;
     overflow: hidden;
+    border-radius: 30px;
 }
 
 .header {

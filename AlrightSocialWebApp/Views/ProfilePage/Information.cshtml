@@ -1,4 +1,4 @@
-﻿@model AlrightSocialWebApp.Models.User;
+﻿@model dynamic;
 @{
     ViewData["Title"] = "Thông tin";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -16,7 +16,7 @@
                 <div class="profile">
                     <div class="profile-avatar">
                         <div class="position-relative">
-                            <img src="@Model.AvatarURL.ToString()" alt="" class="profile-img" />
+                            <img src="@Model.User.AvatarURL.ToString()" alt="" class="profile-img" />
                             <form asp-controller="ProfilePage" asp-action="UploadAvatar" method="post" id="form" enctype="multipart/form-data">
                                 <input type="file" id="file" style="" name="avatar" onchange="this.form.submit()" hidden />
                                 <label for="file" class="btn btn-outline-dark position-absolute translate-middle badge border border-light rounded-circle" style="left: 75%; top:75%">
@@ -27,15 +27,15 @@
                                 </label>
                             </form>
                         </div>
-                        <div class="profile-name">@Model.name</div>
+                        <div class="profile-name">@Model.User.name</div>
                     </div>
                     <img src="https://images.unsplash.com/photo-1508247967583-7d982ea01526?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2250&q=80" alt="" class="profile-cover">
 
                     <div class="profile-menu">
-                        <a href="/ProfilePage?EmailAddress=@Model.EmailAddress">
+                        <a href="/ProfilePage?EmailAddress=@Model.User.EmailAddress">
                             <button class="profile-menu-link active">Bài viết</button>
                         </a>
-                        @if (Context.Session.GetString("email") == Model.EmailAddress)
+                        @if (Context.Session.GetString("email") == Model.User.EmailAddress)
                         {
                             <a href="/ProfilePage/Information?EmailAddress=@Context.Session.GetString("email")">
                                 <button class="profile-menu-link">Thông tin</button>
@@ -43,7 +43,7 @@
                             <a href="/ChangePassword/ChangePasswordGUI?EmailAddress=@Context.Session.GetString("email")">
                                 <button class="profile-menu-link">Đổi mật khẩu</button>
                             </a>
-                            <a href="/Friend/ManageFriendGUI?EmailAddress=@Model.EmailAddress">
+                            <a href="/Friend/ManageFriendGUI?EmailAddress=@Model.User.EmailAddress">
                                 <button class="profile-menu-link">Danh sách bạn bè</button>
                             </a>
                         }
@@ -65,39 +65,32 @@
                                 </div>
                             }
                             <form asp-action="Edit" asp-controller="UserInformation" class="m-3 py-2" method="post">
-                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                <input type="hidden" asp-for="EmailAddress" />
+                                <input type="hidden" name="EmailAddress" value="@Model.User.EmailAddress"/>
                                 <div class="form-group">
-                                    <label asp-for="Password" class="control-label">Xác minh mật khẩu</label>
-                                    <input type="password" asp-for="Password" class="form-control" value="" />
-                                    <span asp-validation-for="Password" class="text-danger"></span>
+                                    <label for="Password" class="control-label">Xác minh mật khẩu</label>
+                                    <input id="Password" type="password" name="Password" class="form-control" value="" />
+                                    
                                 </div>
                                 <div class="form-group">
-                                    <label asp-for="name" class="control-label">Tên</label>
-                                    <input asp-for="name" class="form-control" />
-                                    <span asp-validation-for="name" class="text-danger"></span>
+                                    <label for="name" class="control-label" >Tên</label>
+                                    <input id="name"name="name" class="form-control" value="@Model.User.name"/>
+                                    
                                 </div>
                                 <div class="form-group">
-                                    <label asp-for="sex" class="control-label">Giới tính</label>
-                                    <input asp-for="sex" class="form-control" />
-                                    <span asp-validation-for="sex" class="text-danger"></span>
+                                    <label for="sex" class="control-label">Giới tính</label>
+                                    <input id="sex" name="sex" class="form-control" value="@Model.User.sex"/>
+                                    
                                 </div>
                                 <div class="form-group">
-                                    <label asp-for="DateOfBirth" class="control-label">Ngày sinh</label>
-                                    <input type="date" value="@Model.DateOfBirth.ToString("yyyy-MM-dd")" asp-for="DateOfBirth" class="form-control" />
-                                    <span asp-validation-for="DateOfBirth" class="text-danger"></span>
-                                </div>
+                                    <label for="DateOfBirth" class="control-label">Ngày sinh</label>
+                                    <input type="date" value="@Model.User.DateOfBirth.ToString("yyyy-MM-dd")" name="DateOfBirth" id="DateOfBirth" class="form-control" />
+                                                                    </div>
                                 <div class="form-group">
-                                    <label asp-for="PhoneNumber" class="control-label">Số điện thoại</label>
-                                    <input asp-for="PhoneNumber" class="form-control" />
-                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                    <label for="PhoneNumber" class="control-label">Số điện thoại</label>
+                                    <input id="PhoneNumber" name="PhoneNumber" class="form-control" value="@Model.User.PhoneNumber"/>
                                 </div>
-                                <input asp-for="SignInStatus" class="form-control" hidden />
-                                <div class="form-group">
-                                    <label asp-for="AvatarURL" class="control-label"></label>
-                                    <input asp-for="AvatarURL" class="form-control" hidden />
-                                    <span asp-validation-for="AvatarURL" class="text-danger"></span>
-                                </div>
+                                <input name="SignInStatus" class="form-control" hidden value="@Model.User.SignInStatus"/>
+                                <input name="AvatarURL" class="form-control" hidden  value="@Model.User.AvatarURL"/>
                                 <div class="form-group">
                                     <input type="submit" value="Lưu" class="btn btn-primary" />
                                 </div>
@@ -110,76 +103,18 @@
         <div class="right-side">
             <div class="side-wrapper contacts">
                 <div class="side-title">Liên hệ</div>
-                <div class="user">
-                    <img src="https://randomuser.me/api/portraits/men/1.jpg" class="user-img">
-                    <div class="username">
-                        Andrei Mashrin
-                        <div class="user-status"></div>
+                @foreach (var item in Model.Friends)
+                {
+                    <div class="user">
+                        <img src="@item.GetType().GetProperty("AvatarURL").GetValue(item, null)" class="user-img">
+                        <div class="username">
+                            <a href="/Chat/ChatPageGUI?ChatId=@item.GetType().GetProperty("ChatId").GetValue(item, null)">
+                                @item.GetType().GetProperty("name").GetValue(item, null)
+                            </a>
+                            <div class="user-status @(item.GetType().GetProperty("SignInStatus").GetValue(item, null).ToString() == "Offline" ? "offline" : "")"></div>
+                        </div>
                     </div>
-                </div>
-                <div class="user">
-                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&s=046c29138c1335ef8edee7daf521ba50" class="user-img">
-                    <div class="username">
-                        Aryn Jacobssen
-                        <div class="user-status offline"></div>
-                    </div>
-                </div>
-                <div class="user">
-                    <img src="https://images.unsplash.com/photo-1575084713138-342cae5f8d00?ixlib=rb-1.2.1&auto=format&fit=crop&w=958&q=80" class="user-img">
-                    <div class="username">
-                        Carole Landu
-                        <div class="user-status offline"></div>
-                    </div>
-                </div>
-                <div class="user">
-                    <img src="https://images.pexels.com/photos/598745/pexels-photo-598745.jpeg?h=350&auto=compress&cs=tinysrgb" class="user-img">
-                    <div class="username">
-                        Chineze Afa
-                        <div class="user-status"></div>
-                    </div>
-                </div>
-                <div class="user">
-                    <img src="https://pbs.twimg.com/profile_images/2452384114/noplz47r59v1uxvyg8ku.png" class="user-img">
-                    <div class="username">
-                        Mok Kwang
-                        <div class="user-status"></div>
-                    </div>
-                </div>
-                <div class="user">
-                    <img src="https://randomuser.me/api/portraits/women/63.jpg" class="user-img">
-                    <div class="username">
-                        Naomi Yepes
-                        <div class="user-status"></div>
-                    </div>
-                </div>
-                <div class="user">
-                    <img src="https://images.unsplash.com/photo-1476493279419-b785d41e38d8?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&s=61eaea85f1aa3d065400179c78163f15" class="user-img">
-                    <div class="username">
-                        Shaamikh Ale
-                        <div class="user-status"></div>
-                    </div>
-                </div>
-                <div class="user">
-                    <!-- <img src='https://m.media-amazon.com/images/M/MV5BMjI4NDcyNjQxNl5BMl5BanBnXkFtZTgwMzI4OTM3NjM._V1_UY256_CR13,0,172,256_AL_.jpg' class="user-img"> -->
-                    <div class="username">
-                        Sofia Alcocer
-                        <div class="user-status idle"></div>
-                    </div>
-                </div>
-                <div class="user">
-                    <img src="https://images.unsplash.com/photo-1509380836717-c4320ccf1a6f?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&s=e01c8c45a063daaf6d6e571a32bd6c90" class="user-img">
-                    <div class="username">
-                        Wen Yahui
-                        <div class="user-status"></div>
-                    </div>
-                </div>
-                <div class="user">
-                    <img src="https://pbs.twimg.com/profile_images/737221709267374081/sdwta9Oh.jpg" alt="" class="user-img">
-                    <div class="username">
-                        Leslee Moss
-                        <div class="user-status idle"></div>
-                    </div>
-                </div>
+                }
             </div>
         </div>
         <div class="overlay"></div>

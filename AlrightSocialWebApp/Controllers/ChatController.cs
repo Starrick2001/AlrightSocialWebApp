@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,20 +21,19 @@ namespace AlrightSocialWebApp.Controllers
         {
             _chat = chat;
         }
-        public IActionResult ChatPageGUI()
-        {
-            return View();
-        }
         [HttpGet("[action]")]
-        public IActionResult Chat(int ChatId)
+        public IActionResult ChatPageGUI(int ChatId)
         {
             var chat = _context.Chats.Include(x => x.Messages).FirstOrDefault(x => x.Id == ChatId);
             if (chat.User1 != HttpContext.Session.GetString("email") && chat.User2 != HttpContext.Session.GetString("email"))
             {
                 return RedirectToAction("Index", "HomePage");
             }
+            dynamic mymodel = new ExpandoObject();
+            mymodel.Chats = chat;
+            mymodel.Friends = _context.GetListOfFriends(HttpContext.Session.GetString("email"));
 
-            return View(chat);
+            return View(mymodel) ;
         }
         [HttpPost("[action]/{connectionId}/{roomName}")]
         public async Task<IActionResult> JoinRoom (string connectionId, string roomName)

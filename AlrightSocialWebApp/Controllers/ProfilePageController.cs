@@ -34,6 +34,7 @@ namespace AlrightSocialWebApp.Controllers
                 mymodel.isFriended = db.isFriended(HttpContext.Session.GetString("email"), EmailAddress);
                 mymodel.isBlocked = db.isBlocked(HttpContext.Session.GetString("email"), EmailAddress);
             }
+            mymodel.Friends = db.GetListOfFriends(HttpContext.Session.GetString("email"));
             return View(mymodel);
         }
         [Route("Information")]
@@ -41,7 +42,10 @@ namespace AlrightSocialWebApp.Controllers
         public IActionResult Information(string EmailAddress)
         {
             User user = db.GetUserInfo(EmailAddress);
-            return View(user);
+            dynamic mymodel = new ExpandoObject();
+            mymodel.User = user;
+            mymodel.Friends = db.GetListOfFriends(HttpContext.Session.GetString("email"));
+            return View(mymodel);
         }
 
 
@@ -61,6 +65,7 @@ namespace AlrightSocialWebApp.Controllers
             db.Users.Update(user);
             db.SaveChanges();
             avatar.CopyToAsync(stream);
+            HttpContext.Session.SetString("avatarUrl", user.AvatarURL);
             return RedirectToAction("Index", "ProfilePage", new { EmailAddress = HttpContext.Session.GetString("email") });
         }
     }

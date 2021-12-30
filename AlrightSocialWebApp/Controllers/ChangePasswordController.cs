@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using System.Dynamic;
 
 namespace AlrightSocialWebApp.Controllers
 {
@@ -19,7 +20,10 @@ namespace AlrightSocialWebApp.Controllers
         public IActionResult ChangePasswordGUI(string EmailAddress)
         {
             User user = db.GetUserInfo(EmailAddress);
-            return View(user);
+            dynamic mymodel = new ExpandoObject();
+            mymodel.User = user;
+            mymodel.Friends = db.GetListOfFriends(HttpContext.Session.GetString("email"));
+            return View(mymodel);
         }
 
         [HttpPost]

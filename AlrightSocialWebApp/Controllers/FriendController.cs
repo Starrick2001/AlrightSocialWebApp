@@ -46,15 +46,16 @@ namespace AlrightSocialWebApp.Controllers
         }
         public IActionResult ManageFriendGUI()
         {
-            List<Friend> friends = _context.GetListOfFriends(HttpContext.Session.GetString("email"));
+            List<object> friends = _context.GetListOfFriends(HttpContext.Session.GetString("email"));
             List<object> list = new List<object>();
             foreach (var item in friends)
             {
-                list.Add(_context.GetUserInfo(item.FriendEmail));
+                list.Add(_context.GetUserInfo(item.GetType().GetProperty("FriendEmail").GetValue(item, null).ToString()));
             }
             dynamic mymodel = new ExpandoObject();
             mymodel.Friends = list;
             mymodel.FriendRequests = _context.GetListOfFriendRequests(HttpContext.Session.GetString("email"));
+            mymodel.Chat = friends;
             return View(mymodel);
         }
         public void InsertFriend(Friend friend)
@@ -64,6 +65,12 @@ namespace AlrightSocialWebApp.Controllers
                 UserEmail = friend.FriendEmail,
                 FriendEmail = friend.UserEmail
             };
+            Chat chat = new Chat()
+            {
+                User1 = friend.UserEmail,
+                User2 = friend.FriendEmail
+            };
+            _context.Add(chat);
             _context.Add(friend);
             _context.Add(friend1);
             _context.SaveChangesAsync();

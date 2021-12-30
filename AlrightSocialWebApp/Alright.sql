@@ -238,3 +238,5 @@ ON Post.Author = Users.EmailAddress
 ORDER BY Post.TimeCreate DESC
 
 SELECT COUNT(*) AS [DEM] FROM Friend WHERE UserEmail = 'lebuidihoa257@gmail.com' AND FriendEmail='asdff@gmail.com'
+
+SELECT Id FROM Chats WHERE (User1='lebuidihoa257@gmail.com' AND User2='asdf@gmail.com') OR (User2='lebuidihoa257@gmail.com' AND User1='asdf@gmail.com')
