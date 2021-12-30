@@ -73,55 +73,58 @@
     <div class="project-boxes jsGridView">
         @foreach (var item in Model.Posts)
         {
-            <div class="project-box-wrapper">
-                <div class="project-box" style="background-color: @BGColor[rd.Next(0,4)].ToString();">
-                    <div class="project-box-header">
-                        <span>@item.GetType().GetProperty("TimeModified").GetValue(item, null)</span>
-                        <div class="more-wrapper">
-                            <button class="project-btn-more" id="more-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical">
-                                    <circle cx="12" cy="12" r="1" />
-                                    <circle cx="12" cy="5" r="1" />
-                                    <circle cx="12" cy="19" r="1" />
-                                </svg>
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="more-btn">
-                                <a class="dropdown-item" href="/post/DetailedPostPage?id=@item.GetType().GetProperty("ID").GetValue(item, null)">Xem chi tiết</a>
-                                <form asp-action="Delete" asp-route-id="@item.GetType().GetProperty("ID").GetValue(item, null)" method="post">
-                                    <button type="submit" class="dropdown-item">Xoá</button>
-                                </form>
-                                <a class="dropdown-item" href="/post/edit?id=@item.GetType().GetProperty("ID").GetValue(item, null)">Sửa</a>
+            @if (@item.GetType().GetProperty("SharePrivacy").GetValue(item, null) == "0")
+            {
+                <div class="project-box-wrapper">
+                    <div class="project-box" style="background-color: @BGColor[rd.Next(0, 4)].ToString();">
+                        <div class="project-box-header">
+                            <span>@item.GetType().GetProperty("TimeModified").GetValue(item, null)</span>
+                            <div class="more-wrapper">
+                                <button class="project-btn-more" id="more-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical">
+                                        <circle cx="12" cy="12" r="1" />
+                                        <circle cx="12" cy="5" r="1" />
+                                        <circle cx="12" cy="19" r="1" />
+                                    </svg>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="more-btn">
+                                    <a class="dropdown-item" href="/post/DetailedPostPage?id=@item.GetType().GetProperty("ID").GetValue(item, null)">Xem chi tiết</a>
+                                    <form asp-action="Delete" asp-route-id="@item.GetType().GetProperty("ID").GetValue(item, null)" method="post">
+                                        <button type="submit" class="dropdown-item">Xoá</button>
+                                    </form>
+                                    <a class="dropdown-item" href="/post/edit?id=@item.GetType().GetProperty("ID").GetValue(item, null)">Sửa</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="project-box-content-header">
-                        <p class="box-content-header">@item.GetType().GetProperty("Title").GetValue(item, null)</p>
+                        <div class="project-box-content-header">
+                            <p class="box-content-header">@item.GetType().GetProperty("Title").GetValue(item, null)</p>
 
-                    </div>
-                    <div class="project-box-footer">
-                        <a href="#" class="album-action @(item.GetType().GetProperty("isLiked") != null ? (item.GetType().GetProperty("isLiked").GetValue(item, null).ToString() == "True" ? "active" : "") : "")">
-                            <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-                            </svg>
-                            @item.GetType().GetProperty("Like").GetValue(item, null)
-                        </a>
-                        <a href="#" class="album-action">
-                            <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
-                                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-                            </svg>
-                            @item.GetType().GetProperty("Comment").GetValue(item, null)
-                        </a>
-                        <a href="#" class="album-action">
-                            <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
-                                <path d="M17 1l4 4-4 4" />
-                                <path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4" />
-                                <path d="M21 13v2a4 4 0 01-4 4H3" />
-                            </svg>
-                            @item.GetType().GetProperty("Share").GetValue(item, null)
-                        </a>
+                        </div>
+                        <div class="project-box-footer">
+                            <a href="#" class="album-action @(item.GetType().GetProperty("isLiked") != null ? (item.GetType().GetProperty("isLiked").GetValue(item, null).ToString() == "True" ? "active" : "") : "")">
+                                <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                                </svg>
+                                @item.GetType().GetProperty("Like").GetValue(item, null)
+                            </a>
+                            <a href="#" class="album-action">
+                                <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
+                                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                                </svg>
+                                @item.GetType().GetProperty("Comment").GetValue(item, null)
+                            </a>
+                            <a href="#" class="album-action">
+                                <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
+                                    <path d="M17 1l4 4-4 4" />
+                                    <path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4" />
+                                    <path d="M21 13v2a4 4 0 01-4 4H3" />
+                                </svg>
+                                @item.GetType().GetProperty("Share").GetValue(item, null)
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
         }
     </div>
 </div>

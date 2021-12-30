@@ -29,12 +29,13 @@ namespace AlrightSocialWebApp.Controllers
             dynamic mymodel = new ExpandoObject();
             mymodel.User = user;
             mymodel.Posts = postlist;
+            mymodel.Friends = new List<object>();
             if (HttpContext.Session.GetString("email") != null)
             {
                 mymodel.isFriended = db.isFriended(HttpContext.Session.GetString("email"), EmailAddress);
                 mymodel.isBlocked = db.isBlocked(HttpContext.Session.GetString("email"), EmailAddress);
+                mymodel.Friends = db.GetListOfFriends(HttpContext.Session.GetString("email"));
             }
-            mymodel.Friends = db.GetListOfFriends(HttpContext.Session.GetString("email"));
             return View(mymodel);
         }
         [Route("Information")]
