@@ -90,17 +90,17 @@ namespace AlrightSocialWebApp.Models
             string query = "";
             if (CurrentUser == null)
             {
-                query = "SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, Users.AvatarURL, Users.name, ISNULL(PostShare.Privacy, 0) AS[SharePrivacy], ISNULL(LikeTable.[Like], 0) AS[Like] , ISNULL(CommentTable.[Comment], 0) AS[Comment], ISNULL(ShareTable.[Share], 0) AS[Share] FROM Post LEFT JOIN PostShare ON Post.ID = PostShare.PostID LEFT JOIN (SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN(SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN(SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Users.EmailAddress = Post.Author WHERE(Author = @EmailAddress AND Post.Privacy = 'Public') OR(PostShare.UserEmail = @EmailAddress AND PostShare.Privacy = 'Public') ORDER BY Post.TimeCreate DESC";
+                query = "SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, Users.AvatarURL, Users.name, ISNULL(PostShare.Privacy, 0) AS [SharePrivacy],PostShare.UserEmail AS [SharedEmail], PostShare.name AS [SharedName], PostShare.AvatarURL AS [SharedAvatar], ISNULL(PostShare.Time,0) AS [ShareTime], ISNULL(LikeTable.[Like], 0) AS[Like] , ISNULL(CommentTable.[Comment], 0) AS[Comment], ISNULL(ShareTable.[Share], 0) AS[Share]  FROM Post LEFT JOIN(SELECT* FROM PostShare INNER JOIN Users ON Users.EmailAddress= PostShare.UserEmail) AS[PostShare] ON Post.ID = PostShare.PostID LEFT JOIN(SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN(SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN(SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Users.EmailAddress = Post.Author WHERE(Author = @EmailAddress AND Post.Privacy = 'Public') OR(PostShare.UserEmail = @EmailAddress AND PostShare.Privacy = 'Public') ORDER BY Post.TimeCreate DESC";
             }
             else
             {
                 if (EmailAddress == CurrentUser)
                 {
-                    query = "SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Users.AvatarURL, Users.name, Privacy, Post.SharePrivacy, ISNULL(LikeTable.[Like],0) AS [Like] , ISNULL(CommentTable.[Comment],0) AS [Comment], ISNULL(ShareTable.[Share],0) AS [Share]  FROM (SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, ('0') AS[SharePrivacy] FROM Post WHERE Post.Author = @EmailAddress UNION SELECT PostShare.PostID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, PostShare.Privacy AS[SharePrivacy] FROM Post, PostShare WHERE Post.ID = PostShare.PostID AND PostShare.UserEmail = @EmailAddress) AS[Post] LEFT JOIN(SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN(SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN(SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Users.EmailAddress = Post.Author ORDER BY Post.TimeCreate DESC ";
+                    query = "SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Users.AvatarURL, Users.name, Privacy, Post.SharePrivacy, Post.SharedEmail, Post.SharedName, Post.SharedAvatar, ISNULL(Post.ShareTime,0) AS [ShareTime], ISNULL(LikeTable.[Like],0) AS [Like] , ISNULL(CommentTable.[Comment],0) AS [Comment], ISNULL(ShareTable.[Share],0) AS [Share]   FROM (SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, ('0') AS[SharePrivacy], ('0') AS[SharedEmail], ('0') AS[SharedName], ('0') AS[SharedAvatar], NULL AS[ShareTime] FROM Post WHERE Post.Author = @EmailAddress UNION SELECT PostShare.PostID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, PostShare.Privacy AS[SharePrivacy], PostShare.UserEmail AS[SharedEmail], Users.name AS[SharedName], Users.AvatarURL AS[SharedAvatar], ISNULL(PostShare.Time, 0) AS[ShareTime] FROM Post INNER JOIN PostShare ON Post.ID = PostShare.PostID INNER JOIN Users ON PostShare.UserEmail = Users.EmailAddress WHERE PostShare.UserEmail = @EmailAddress) AS[Post] LEFT JOIN(SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN(SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN(SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Users.EmailAddress = Post.Author ORDER BY Post.TimeCreate DESC ";
                 }
                 else
                 {
-                    query = "SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, Users.AvatarURL, Users.name, ISNULL(Post.SharePrivacy,0) AS [SharePrivacy], ISNULL(LikeTable.[Like], 0) AS[Like] , ISNULL(CommentTable.[Comment], 0) AS[Comment], ISNULL(ShareTable.[Share], 0) AS[Share]  FROM (SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, ('0') AS[SharePrivacy] FROM Post WHERE(Post.Author = @EmailAddress AND Post.Privacy = 'Public') UNION SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, PostShare.Privacy AS[SharePrivacy] FROM Post INNER JOIN PostShare ON Post.ID = PostShare.PostID WHERE(PostShare.UserEmail = @EmailAddress AND PostShare.Privacy = 'Public') UNION SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, ('0') AS[SharePrivacy] FROM Post LEFT JOIN PostShare ON Post.ID = PostShare.PostID WHERE(Post.Author = @EmailAddress AND Post.Privacy = 'Friend' AND Author IN(SELECT FriendEmail FROM Friend WHERE UserEmail = @CurrentUser)) UNION SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, PostShare.Privacy AS[SharePrivacy] FROM Post INNER JOIN PostShare ON Post.ID = PostShare.PostID WHERE(PostShare.UserEmail = @EmailAddress AND PostShare.Privacy = 'Friend' AND PostShare.UserEmail IN(SELECT FriendEmail FROM Friend WHERE UserEmail = @CurrentUser))) AS[Post] LEFT JOIN(SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN(SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN(SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Post.Author = Users.EmailAddress ORDER BY Post.TimeCreate DESC ";
+                    query = "SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, Users.AvatarURL, Users.name, ISNULL(Post.SharePrivacy,0) AS [SharePrivacy], Post.SharedEmail, Post.SharedName, Post.SharedAvatar, ISNULL(Post.SharedTime,0) AS [ShareTime], ISNULL(LikeTable.[Like], 0) AS[Like] , ISNULL(CommentTable.[Comment], 0) AS[Comment], ISNULL(ShareTable.[Share], 0) AS[Share]   FROM (SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, ('0') AS[SharePrivacy], ('0') AS[SharedEmail], ('0') AS[SharedName], ('0') AS[SharedAvatar], NULL AS[SharedTime] FROM Post WHERE(Post.Author = @EmailAddress AND Post.Privacy = 'Public') UNION SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, PostShare.Privacy AS[SharePrivacy], PostShare.UserEmail AS[SharedEmail], Users.name AS[SharedName], Users.AvatarURL AS[SharedAvatar], PostShare.Time AS[ShareTime] FROM Post INNER JOIN PostShare ON Post.ID = PostShare.PostID INNER JOIN Users ON Users.EmailAddress = PostShare.UserEmail WHERE(PostShare.UserEmail = @EmailAddress AND PostShare.Privacy = 'Public') UNION SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, ('0') AS[SharePrivacy], ('0') AS[SharedEmail], ('0') AS[SharedName], ('0') AS[SharedAvatar], NULL AS[SharedTime] FROM Post LEFT JOIN PostShare ON Post.ID = PostShare.PostID WHERE(Post.Author = @EmailAddress AND Post.Privacy = 'Friend' AND Author IN(SELECT FriendEmail FROM Friend WHERE UserEmail = @CurrentUser)) UNION SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, PostShare.Privacy AS[SharePrivacy], PostShare.UserEmail AS[SharedEmail], Users.name AS[SharedName], Users.AvatarURL AS[SharedAvatar], PostShare.Time AS[ShareTime] FROM Post INNER JOIN PostShare ON Post.ID = PostShare.PostID INNER JOIN Users ON Users.EmailAddress = PostShare.UserEmail WHERE(PostShare.UserEmail = @EmailAddress AND PostShare.Privacy = 'Friend' AND PostShare.UserEmail IN(SELECT FriendEmail FROM Friend WHERE UserEmail = @CurrentUser))) AS[Post] LEFT JOIN(SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN(SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN(SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Post.Author = Users.EmailAddress ORDER BY Post.TimeCreate DESC";
                 }
             }
             var command = new SqlCommand(query, conn);
@@ -125,6 +125,10 @@ namespace AlrightSocialWebApp.Models
                         name = reader["name"].ToString(),
                         Privacy = reader["Privacy"].ToString(),
                         SharePrivacy = reader["SharePrivacy"].ToString(),
+                        SharedEmail = reader["SharedEmail"].ToString(),
+                        SharedName = reader["SharedName"].ToString(),
+                        SharedAvatar = reader["SharedAvatar"].ToString(),
+                        ShareTime = (DateTime)reader["ShareTime"],
                         Like = (int)reader["Like"],
                         Comment = (int)reader["Comment"],
                         Share = (int)reader["Share"],
@@ -141,7 +145,7 @@ namespace AlrightSocialWebApp.Models
             List<object> list = new List<object>();
             SqlConnection conn = new SqlConnection();
             conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
-            string query = "SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, Users.AvatarURL, Users.name, ISNULL(LikeTable.[Like], 0) AS[Like] , ISNULL(CommentTable.[Comment], 0) AS[Comment], ISNULL(ShareTable.[Share], 0) AS[Share]   FROM (SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy FROM Post WHERE Author = @EmailAddress UNION SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy FROM Post WHERE Privacy = 'Friend' AND Author IN(SELECT FriendEmail FROM Friend WHERE UserEmail = @EmailAddress) UNION SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy FROM Post WHERE Privacy = 'Public' AND Author Not IN(SELECT BlockedUser FROM BlockedEmail WHERE UserEmail = @EmailAddress)) AS[Post] LEFT JOIN (SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN (SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN (SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Post.Author = Users.EmailAddress ORDER BY Post.TimeCreate DESC";
+            string query = "SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, Users.AvatarURL, Users.name,Post.SharePrivacy,Post.SharedEmail, Post.SharedName, Post.SharedAvatar, ISNULL(ShareTime,0) AS [ShareTime], ISNULL(LikeTable.[Like], 0) AS[Like] , ISNULL(CommentTable.[Comment], 0) AS[Comment], ISNULL(ShareTable.[Share], 0) AS[Share]    FROM (SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, ('0') AS[SharePrivacy], ('0') AS[SharedEmail], ('0') AS[SharedName], ('0') AS[SharedAvatar], NULL AS[ShareTime] FROM Post WHERE Author = @EmailAddress UNION SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, PostShare.Privacy AS[SharePrivacy], PostShare.UserEmail AS[SharedEmail], Users.name AS[SharedName], Users.AvatarURL AS[SharedAvatar], PostShare.Time AS[ShareTime] FROM Post INNER JOIN PostShare ON Post.ID = PostShare.PostID INNER JOIN Users ON PostShare.UserEmail = Users.EmailAddress WHERE PostShare.UserEmail = @EmailAddress UNION SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, ('0') AS[SharePrivacy], ('0') AS[SharedEmail], ('0') AS[SharedName], ('0') AS[SharedAvatar], NULL AS[ShareTime] FROM Post WHERE(Privacy = 'Friend' AND Author IN(SELECT FriendEmail FROM Friend WHERE UserEmail = @EmailAddress)) UNION SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, PostShare.Privacy AS[SharePrivacy], PostShare.UserEmail AS[SharedEmail], Users.name AS[SharedName], Users.AvatarURL AS[SharedAvatar], PostShare.Time AS[ShareTime] FROM Post INNER JOIN PostShare ON Post.ID = PostShare.PostID INNER JOIN Users ON PostShare.UserEmail = Users.EmailAddress WHERE(PostShare.Privacy = 'Friend' AND PostShare.UserEmail IN(SELECT FriendEmail FROM Friend WHERE UserEmail = @EmailAddress)) UNION SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, ('0') AS[SharePrivacy], ('0') AS[SharedEmail], ('0') AS[SharedName], ('0') AS[SharedAvatar], NULL AS[ShareTime] FROM Post WHERE(Privacy = 'Public' AND Author Not IN(SELECT BlockedUser FROM BlockedEmail WHERE UserEmail = @EmailAddress)) UNION SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, PostShare.Privacy AS[SharePrivacy], PostShare.UserEmail AS[SharedEmail], Users.name AS[SharedName], Users.AvatarURL AS[SharedAvatar], PostShare.Time AS[ShareTime] FROM Post INNER JOIN PostShare ON Post.ID = PostShare.PostID INNER JOIN Users ON PostShare.UserEmail = Users.EmailAddress WHERE PostShare.Privacy = 'Public' AND PostShare.UserEmail Not IN(SELECT BlockedUser FROM BlockedEmail WHERE UserEmail = @EmailAddress)) AS[Post] LEFT JOIN(SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN(SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN(SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Post.Author = Users.EmailAddress ORDER BY Post.TimeCreate DESC";
             var command = new SqlCommand(query, conn);
             command.Parameters.AddWithValue("EmailAddress", EmailAddress);
             conn.Open();
@@ -161,6 +165,11 @@ namespace AlrightSocialWebApp.Models
                         AvatarURL = reader["AvatarURL"].ToString(),
                         AuthorName = reader["name"].ToString(),
                         Privacy = reader["Privacy"].ToString(),
+                        SharePrivacy = reader["SharePrivacy"].ToString(),
+                        SharedEmail = reader["SharedEmail"].ToString(),
+                        SharedName = reader["SharedName"].ToString(),
+                        SharedAvatar = reader["SharedAvatar"].ToString(),
+                        ShareTime = (DateTime)reader["ShareTime"],
                         Like = (int)reader["Like"],
                         Comment = (int)reader["Comment"],
                         Share = (int)reader["Share"],
@@ -177,7 +186,7 @@ namespace AlrightSocialWebApp.Models
             List<object> list = new List<object>();
             SqlConnection conn = new SqlConnection();
             conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
-            string query = "SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, Users.AvatarURL, Users.name, ISNULL(LikeTable.[Like], 0) AS[Like] , ISNULL(CommentTable.[Comment], 0) AS[Comment], ISNULL(ShareTable.[Share], 0) AS[Share] FROM Post LEFT JOIN (SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN (SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN (SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Post.Author = Users.EmailAddress WHERE Post.Privacy='Public' ORDER BY Post.TimeCreate DESC";
+            string query = "SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, Users.AvatarURL, Users.name,Post.SharePrivacy,Post.SharedEmail, Post.SharedName, Post.SharedAvatar, ISNULL(ShareTime,0) AS [ShareTime], ISNULL(LikeTable.[Like], 0) AS[Like] , ISNULL(CommentTable.[Comment], 0) AS[Comment], ISNULL(ShareTable.[Share], 0) AS[Share]  FROM (SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, ('0') AS[SharePrivacy], ('0') AS[SharedEmail], ('0') AS[SharedName], ('0') AS[SharedAvatar], NULL AS[ShareTime] FROM Post UNION SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, PostShare.Privacy AS[SharePrivacy], PostShare.UserEmail AS[SharedEmail], Users.name AS[SharedName], Users.AvatarURL AS[SharedAvatar], PostShare.Time AS[ShareTime] FROM Post INNER JOIN PostShare ON Post.ID = PostShare.PostID INNER JOIN Users ON PostShare.UserEmail = Users.EmailAddress) AS[Post] LEFT JOIN(SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN(SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN(SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Post.Author = Users.EmailAddress WHERE(Post.Privacy = 'Public' OR Post.SharePrivacy = 'Public') ORDER BY Post.TimeCreate DESC";
             var command = new SqlCommand(query, conn);
             conn.Open();
             var reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
@@ -196,6 +205,11 @@ namespace AlrightSocialWebApp.Models
                         AvatarURL = reader["AvatarURL"].ToString(),
                         AuthorName = reader["name"].ToString(),
                         Privacy = reader["Privacy"].ToString(),
+                        SharePrivacy = reader["SharePrivacy"].ToString(),
+                        SharedEmail = reader["SharedEmail"].ToString(),
+                        SharedName = reader["SharedName"].ToString(),
+                        SharedAvatar = reader["SharedAvatar"].ToString(),
+                        ShareTime = (DateTime)reader["ShareTime"],
                         Like = (int)reader["Like"],
                         Comment = (int)reader["Comment"],
                         Share = (int)reader["Share"]
@@ -560,5 +574,58 @@ namespace AlrightSocialWebApp.Models
         public DbSet<AlrightSocialWebApp.Models.BlockedEmail> BlockedEmail { get; set; }
         public DbSet<AlrightSocialWebApp.Models.Message> Message { get; set; }
         public DbSet<AlrightSocialWebApp.Models.Chat> Chats { get; set; }
+        public DbSet<AlrightSocialWebApp.Models.PostShare> PostShare { get; set; }
+
+        public void InsertShare(PostShare share)
+        {
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query2 = "INSERT INTO PostShare (UserEmail, PostID, Privacy, Time) VALUES (@UserEmail, @PostID, @Privacy, @Time)";
+            SqlCommand cmd2 = new SqlCommand(query2, conn);
+            cmd2.Parameters.AddWithValue("@PostID", share.PostID);
+            cmd2.Parameters.AddWithValue("@UserEmail", share.UserEmail);
+            cmd2.Parameters.AddWithValue("@Privacy", share.Privacy);
+            cmd2.Parameters.AddWithValue("@Time", share.Time);
+            conn.Open();
+            cmd2.ExecuteNonQuery();
+            conn.Close();
+        }
+        public void InsertShare(PostShare share, string UserEmail)
+        {
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+
+            string query1 = "INSERT INTO Notification (UserEmail, Content, Time, isRead, PostID) VALUES (@UserEmail, @Content, @Time, 'false', @PostID)";
+            SqlCommand cmd1 = new SqlCommand(query1, conn);
+            cmd1.Parameters.AddWithValue("@UserEmail", UserEmail);
+            cmd1.Parameters.AddWithValue("@Content", share.UserEmail + " đã chia sẻ bài viết của bạn.");
+            cmd1.Parameters.AddWithValue("@Time", DateTime.Now);
+            cmd1.Parameters.AddWithValue("@PostID", share.PostID);
+            conn.Open();
+            cmd1.ExecuteNonQuery();
+            int numberofnotification = -1;
+            string getnumberofnotification = "SELECT ISNULL(MAX(ID),0) AS [NUMBER] FROM NOTIFICATION";
+            SqlCommand command = new SqlCommand(getnumberofnotification, conn);
+            var reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    numberofnotification = (int)reader["NUMBER"];
+                }
+                reader.Close();
+            }
+            conn.Close();
+            string query2 = "INSERT INTO PostShare (PostID, UserEmail, NotificationID, Privacy, Time) VALUES (@PostID, @UserEmail, @NotificationID, @Privacy, @Time)";
+            SqlCommand cmd2 = new SqlCommand(query2, conn);
+            cmd2.Parameters.AddWithValue("@PostID", share.PostID);
+            cmd2.Parameters.AddWithValue("@UserEmail", share.UserEmail);
+            cmd2.Parameters.AddWithValue("@NotificationID", numberofnotification);
+            cmd2.Parameters.AddWithValue("@Privacy", share.Privacy);
+            cmd2.Parameters.AddWithValue("@Time", share.Time);
+            conn.Open();
+            cmd2.ExecuteNonQuery();
+            conn.Close();
+        }
     }
 }

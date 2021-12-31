@@ -172,7 +172,7 @@
                                         <img src="@Model.User.AvatarURL" class="status-img" />
                                         <div class="album-detail">
                                             <div class="album-title"><strong>@Model.User.name</strong> đã chia sẻ <span>bài viết</span></div>
-                                            <div class="album-date">@post.GetType().GetProperty("TimeCreate").GetValue(post, null)</div>
+                                            <div class="album-date">@post.GetType().GetProperty("ShareTime").GetValue(post, null)</div>
                                         </div>
                                         <button class="intro-menu" id="more-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical">
@@ -186,7 +186,6 @@
                                             <a class="dropdown-item" href="/post/DetailedPostPage?id=@post.GetType().GetProperty("ID").GetValue(post, null)">Xem chi tiết</a>
                                             @if (post.GetType().GetProperty("Author").GetValue(post, null) == Context.Session.GetString("email"))
                                             {
-
                                                 <form asp-controller="Post" asp-action="Delete" asp-route-id="@post.GetType().GetProperty("ID").GetValue(post, null)" method="post">
                                                     <button type="submit" class="dropdown-item">Xoá</button>
                                                 </form>

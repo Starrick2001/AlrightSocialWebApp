@@ -288,3 +288,77 @@ Post LEFT JOIN PostShare
 ON Post.ID=PostShare.PostID 
 LEFT JOIN 
 (SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN (SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN (SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Users.EmailAddress = Post.Author WHERE (Author = 'lebuidihoa257@gmail.com' AND Post.Privacy='Public') OR (PostShare.UserEmail='lebuidihoa257@gmail.com' AND PostShare.Privacy='Public') ORDER BY Post.TimeCreate DESC
+
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, Users.AvatarURL, Users.name,Post.SharePrivacy,Post.SharedEmail, Post.SharedName, Post.SharedAvatar, ISNULL(ShareTime,0) AS [ShareTime], ISNULL(LikeTable.[Like], 0) AS[Like] , ISNULL(CommentTable.[Comment], 0) AS[Comment], ISNULL(ShareTable.[Share], 0) AS[Share] 
+FROM 
+(SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, ('0') AS [SharePrivacy], ('0') AS [SharedEmail], ('0') AS [SharedName], ('0') AS [SharedAvatar], NULL AS [ShareTime]
+FROM Post 
+UNION
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, PostShare.Privacy AS [SharePrivacy], PostShare.UserEmail AS [SharedEmail], Users.name AS [SharedName], Users.AvatarURL AS [SharedAvatar], PostShare.Time AS [ShareTime]
+FROM Post INNER JOIN PostShare 
+ON Post.ID=PostShare.PostID INNER JOIN Users ON PostShare.UserEmail=Users.EmailAddress) AS [Post]
+LEFT JOIN (SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN (SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN (SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Post.Author = Users.EmailAddress WHERE (Post.Privacy='Public' OR Post.SharePrivacy='Public') ORDER BY Post.TimeCreate DESC
+
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, Users.AvatarURL, Users.name,Post.SharePrivacy,Post.SharedEmail, Post.SharedName, Post.SharedAvatar, ISNULL(ShareTime,0) AS [ShareTime], ISNULL(LikeTable.[Like], 0) AS[Like] , ISNULL(CommentTable.[Comment], 0) AS[Comment], ISNULL(ShareTable.[Share], 0) AS[Share]   
+FROM 
+(SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, ('0') AS [SharePrivacy], ('0') AS [SharedEmail], ('0') AS [SharedName], ('0') AS [SharedAvatar], NULL AS [ShareTime]
+FROM Post WHERE Author = 'lebuidihoa257@gmail.com' 
+UNION
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, PostShare.Privacy AS [SharePrivacy], PostShare.UserEmail AS [SharedEmail], Users.name AS [SharedName], Users.AvatarURL AS [SharedAvatar], PostShare.Time AS [ShareTime]
+FROM Post INNER JOIN PostShare 
+ON Post.ID=PostShare.PostID INNER JOIN Users ON PostShare.UserEmail=Users.EmailAddress
+WHERE PostShare.UserEmail = 'lebuidihoa257@gmail.com' 
+UNION 
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, ('0') AS [SharePrivacy], ('0') AS [SharedEmail], ('0') AS [SharedName], ('0') AS [SharedAvatar], NULL AS [ShareTime]
+FROM Post 
+WHERE (Privacy = 'Friend' AND Author IN (SELECT FriendEmail FROM Friend WHERE UserEmail = 'lebuidihoa257@gmail.com') )
+UNION
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, PostShare.Privacy AS [SharePrivacy], PostShare.UserEmail AS [SharedEmail], Users.name AS [SharedName], Users.AvatarURL AS [SharedAvatar], PostShare.Time AS [ShareTime]
+FROM Post INNER JOIN PostShare 
+ON Post.ID=PostShare.PostID INNER JOIN Users ON PostShare.UserEmail=Users.EmailAddress
+WHERE (PostShare.Privacy='Friend' AND PostShare.UserEmail IN (SELECT FriendEmail FROM Friend WHERE UserEmail = 'lebuidihoa257@gmail.com')) 
+UNION 
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, ('0') AS [SharePrivacy], ('0') AS [SharedEmail], ('0') AS [SharedName], ('0') AS [SharedAvatar], NULL AS [ShareTime]
+FROM Post 
+WHERE (Privacy = 'Public' AND Author Not IN (SELECT BlockedUser FROM BlockedEmail WHERE UserEmail = 'lebuidihoa257@gmail.com'))
+UNION
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, PostShare.Privacy AS [SharePrivacy], PostShare.UserEmail AS [SharedEmail], Users.name AS [SharedName], Users.AvatarURL AS [SharedAvatar], PostShare.Time AS [ShareTime]
+FROM Post INNER JOIN PostShare 
+ON Post.ID=PostShare.PostID INNER JOIN Users ON PostShare.UserEmail=Users.EmailAddress
+WHERE PostShare.Privacy='Public' AND PostShare.UserEmail Not IN (SELECT BlockedUser FROM BlockedEmail WHERE UserEmail = 'lebuidihoa257@gmail.com')) AS [Post]   
+LEFT JOIN (SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN (SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN (SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Post.Author = Users.EmailAddress ORDER BY Post.TimeCreate DESC
+
+
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, Users.AvatarURL, Users.name, ISNULL(PostShare.Privacy, 0) AS [SharePrivacy],PostShare.UserEmail AS [SharedEmail], PostShare.name AS [SharedName], PostShare.AvatarURL AS [SharedAvatar], ISNULL(PostShare.Time,0) AS [ShareTime], ISNULL(LikeTable.[Like], 0) AS[Like] , ISNULL(CommentTable.[Comment], 0) AS[Comment], ISNULL(ShareTable.[Share], 0) AS[Share] 
+FROM Post 
+LEFT JOIN (SELECT * FROM PostShare INNER JOIN Users ON Users.EmailAddress=PostShare.UserEmail) AS [PostShare]
+ON Post.ID = PostShare.PostID 
+LEFT JOIN (SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN(SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN(SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Users.EmailAddress = Post.Author WHERE(Author = 'lebuidihoa257@gmail.com' AND Post.Privacy = 'Public') OR (PostShare.UserEmail = 'lebuidihoa257@gmail.com' AND PostShare.Privacy = 'Public') ORDER BY Post.TimeCreate DESC
+
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Users.AvatarURL, Users.name, Privacy, Post.SharePrivacy, Post.SharedEmail, Post.SharedName, Post.SharedAvatar, ISNULL(Post.ShareTime,0) AS [ShareTime], ISNULL(LikeTable.[Like],0) AS [Like] , ISNULL(CommentTable.[Comment],0) AS [Comment], ISNULL(ShareTable.[Share],0) AS [Share]  
+FROM 
+(SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, ('0') AS[SharePrivacy], ('0') AS [SharedEmail], ('0') AS [SharedName], ('0') AS [SharedAvatar], NULL AS [ShareTime]
+FROM Post WHERE Post.Author = 'lebuidihoa257@gmail.com' 
+UNION 
+SELECT PostShare.PostID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, PostShare.Privacy AS [SharePrivacy], PostShare.UserEmail AS [SharedEmail], Users.name AS [SharedName], Users.AvatarURL AS [SharedAvatar], ISNULL(PostShare.Time,0) AS [ShareTime]
+FROM Post INNER JOIN PostShare ON Post.ID = PostShare.PostID 
+INNER JOIN Users ON PostShare.UserEmail = Users.EmailAddress WHERE PostShare.UserEmail = 'lebuidihoa257@gmail.com') AS[Post] 
+LEFT JOIN(SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN(SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN(SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Users.EmailAddress = Post.Author ORDER BY Post.TimeCreate DESC 
+
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, Users.AvatarURL, Users.name, ISNULL(Post.SharePrivacy,0) AS [SharePrivacy], Post.SharedEmail, Post.SharedName, Post.SharedAvatar, ISNULL(Post.SharedTime,0) AS [ShareTime], ISNULL(LikeTable.[Like], 0) AS[Like] , ISNULL(CommentTable.[Comment], 0) AS[Comment], ISNULL(ShareTable.[Share], 0) AS[Share]  
+FROM 
+(SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, ('0') AS [SharePrivacy], ('0') AS [SharedEmail], ('0') AS [SharedName], ('0') AS [SharedAvatar], NULL AS [SharedTime]
+FROM Post WHERE(Post.Author = 'lebuidihoa257@gmail.com' AND Post.Privacy = 'Public') 
+UNION 
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, PostShare.Privacy AS[SharePrivacy], PostShare.UserEmail AS [SharedEmail], Users.name AS [SharedName], Users.AvatarURL AS [SharedAvatar], PostShare.Time AS [ShareTime]
+FROM Post INNER JOIN PostShare ON Post.ID = PostShare.PostID INNER JOIN Users ON Users.EmailAddress=PostShare.UserEmail
+WHERE(PostShare.UserEmail = 'lebuidihoa257@gmail.com' AND PostShare.Privacy = 'Public') 
+UNION 
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, ('0') AS[SharePrivacy], ('0') AS [SharedEmail], ('0') AS [SharedName], ('0') AS [SharedAvatar], NULL AS [SharedTime]
+FROM Post LEFT JOIN PostShare ON Post.ID = PostShare.PostID 
+WHERE(Post.Author = 'lebuidihoa257@gmail.com' AND Post.Privacy = 'Friend' AND Author IN(SELECT FriendEmail FROM Friend WHERE UserEmail = 'asdff@gmail.com')) 
+UNION 
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, PostShare.Privacy AS[SharePrivacy], PostShare.UserEmail AS [SharedEmail], Users.name AS [SharedName], Users.AvatarURL AS [SharedAvatar], PostShare.Time AS [ShareTime]
+FROM Post INNER JOIN PostShare ON Post.ID = PostShare.PostID INNER JOIN Users ON Users.EmailAddress=PostShare.UserEmail
+WHERE(PostShare.UserEmail = 'lebuidihoa257@gmail.com' AND PostShare.Privacy = 'Friend' AND PostShare.UserEmail IN(SELECT FriendEmail FROM Friend WHERE UserEmail = 'asdff@gmail.com'))) AS[Post] 
+LEFT JOIN(SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN(SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN(SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Post.Author = Users.EmailAddress ORDER BY Post.TimeCreate DESC 
