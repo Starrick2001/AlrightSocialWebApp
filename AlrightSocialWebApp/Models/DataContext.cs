@@ -442,6 +442,28 @@ namespace AlrightSocialWebApp.Models
                 return true;
             else return false;
         }
+        public bool isSuspended(string UserEmail)
+        {
+            int temp = 0;
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query = "SELECT COUNT(*) AS [DEM] FROM (SELECT SuspendedEmail FROM SuspendedUser WHERE SuspendedEmail = @UserEmail) AS [A]";
+            var command = new SqlCommand(query, conn);
+            command.Parameters.AddWithValue("UserEmail", UserEmail);
+            conn.Open();
+            var reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    temp = (int)reader["DEM"];
+                }
+            }
+            conn.Close();
+            if (temp > 0)
+                return true;
+            else return false;
+        }
 
         public int findChat(string User1, string User2)
         {

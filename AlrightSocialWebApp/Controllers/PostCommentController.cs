@@ -67,6 +67,10 @@ namespace AlrightSocialWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int PostID, string Content)
         {
+            if (_context.isSuspended(HttpContext.Session.GetString("email")) == true)
+            {
+                return RedirectToAction("SuspendedNotification", "HomePage");
+            }
             if (ModelState.IsValid)
             {
                 PostComment cmt = new PostComment()

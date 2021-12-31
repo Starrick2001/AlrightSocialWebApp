@@ -85,6 +85,10 @@ namespace AlrightSocialWebApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Post post)
         {
+            if (_context.isSuspended(HttpContext.Session.GetString("email")) == true)
+            {
+                return RedirectToAction("SuspendedNotification","HomePage");
+            }
             if (ModelState.IsValid)
             {
                 post.TimeCreate = DateTime.Now;

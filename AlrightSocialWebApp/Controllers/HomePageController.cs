@@ -30,5 +30,9 @@ namespace AlrightSocialWebApp.Controllers
                 return View(mymodel);
             }
         }
+        public IActionResult SuspendedNotification()
+        {
+            return View();
+        }
     }
 }
