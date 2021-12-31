@@ -22,6 +22,18 @@ namespace AlrightSocialWebApp.Controllers
         {
             this.hostingEnvironment = hostingEnvironment;
         }
+        [HttpPost("[action]")]
+        public IActionResult SearchPublicPost(string searchString)
+        {
+            List<object> list = _context.SearchPublicPost("%"+searchString+"%");
+            return View("SearchPost",list);
+        }
+        [HttpPost("[action]")]
+        public IActionResult SearchPost(string searchString)
+        {
+            List<object> list = _context.SearchPost(HttpContext.Session.GetString("email"),"%" + searchString + "%");
+            return View(list);
+        }
 
         // GET: Post
         [Route("ManagePostPage")]

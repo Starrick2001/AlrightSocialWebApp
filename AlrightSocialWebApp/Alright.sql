@@ -123,6 +123,17 @@ CREATE TABLE Chats (
 	FOREIGN KEY (User2) REFERENCES Users(EmailAddress)
 )
 
+CREATE TABLE Administrator (
+	EmailAddress nvarchar(255) NOT NULL PRIMARY KEY,
+	 Password nvarchar(255) NOT NULL,
+	 name nvarchar(255),
+	 sex nvarchar(255),
+	 DateOfBirth date,
+	 PhoneNumber nvarchar(255),
+	 SignInStatus nvarchar(255),
+	 AvatarURL nvarchar(255)
+)
+
 
 SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, ISNULL(LikeTable.[Like],0) AS [Like] , ISNULL(CommentTable.[Comment],0) AS [Comment], ISNULL(ShareTable.[Share],0) AS [Share]
 FROM Post 
@@ -362,3 +373,37 @@ SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, 
 FROM Post INNER JOIN PostShare ON Post.ID = PostShare.PostID INNER JOIN Users ON Users.EmailAddress=PostShare.UserEmail
 WHERE(PostShare.UserEmail = 'lebuidihoa257@gmail.com' AND PostShare.Privacy = 'Friend' AND PostShare.UserEmail IN(SELECT FriendEmail FROM Friend WHERE UserEmail = 'asdff@gmail.com'))) AS[Post] 
 LEFT JOIN(SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN(SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN(SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Post.Author = Users.EmailAddress ORDER BY Post.TimeCreate DESC 
+
+
+SELECT name, FriendEmail, ISNULL(Mess.NumOfMess,0) AS [NumOfMess], ISNULL(LikeInfor.NumOfLike,0) AS [NumOfLike], ISNULL(Cmt.NumOfComment,0) AS [NumOfComment], ISNULL(Share.NumOfShare,0) AS [NumOfShare]
+FROM Chats 
+	INNER JOIN 
+		(SELECT Chats.Id, COUNT(Message.ID) NumOfMess
+		FROM Chats INNER JOIN Message ON Message.ChatId=Chats.Id
+		GROUP BY Chats.Id) AS [Mess] 
+	ON Mess.ID=Chats.Id
+	INNER JOIN 
+		(SELECT FriendEmail
+		FROM Friend 
+		WHERE UserEmail='lebuidihoa257@gmail.com') AS [Friend]
+	ON (User1=Friend.FriendEmail AND User2='lebuidihoa257@gmail.com') OR (User2=Friend.FriendEmail AND User1='lebuidihoa257@gmail.com')
+	LEFT JOIN 
+		(SELECT UserEmail, COUNT(*) AS [NumOfLike]
+		FROM PostLike INNER JOIN Post ON Post.ID=PostLike.PostID
+		WHERE Author='lebuidihoa257@gmail.com'
+		GROUP BY UserEmail) AS [LikeInfor] 
+	ON LikeInfor.UserEmail=Friend.FriendEmail
+	LEFT JOIN 
+		(SELECT UserEmail, COUNT(*) AS [NumOfComment]
+		FROM PostComment INNER JOIN Post ON Post.ID=PostComment.PostID
+		WHERE Author='lebuidihoa257@gmail.com'
+		GROUP BY UserEmail) AS [Cmt]
+	ON Cmt.UserEmail=Friend.FriendEmail
+	LEFT JOIN 
+		(SELECT UserEmail, COUNT(*) AS [NumOfShare]
+		FROM PostShare INNER JOIN Post ON Post.ID=PostShare.PostID
+		WHERE Author='lebuidihoa257@gmail.com'
+		GROUP BY UserEmail) AS [Share]
+	ON Share.UserEmail=Friend.FriendEmail
+	INNER JOIN Users ON Users.EmailAddress=Friend.FriendEmail
+ORDER BY NumOfMess, NumOfShare, NumOfComment, NumOfLike DESC

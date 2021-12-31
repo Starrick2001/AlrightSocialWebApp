@@ -85,13 +85,13 @@
                                     @Model.Post.GetType().GetProperty("Like").GetValue(Model.Post, null)
                                 </button>
                             }
-                            <a href="#" class="album-action">
+                            <a href="/post/DetailedPostPage?id=@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)" class="album-action">
                                 <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
                                     <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
                                 </svg>
                                 @Model.Post.GetType().GetProperty("Comment").GetValue(Model.Post, null)
                             </a>
-                            <a href="#" class="album-action">
+                            <a href="/PostShare/Create?PostID=@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)" class="album-action">
                                 <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
                                     <path d="M17 1l4 4-4 4" />
                                     <path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4" />

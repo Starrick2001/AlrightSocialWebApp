@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AlrightSocialWebApp.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace AlrightSocialWebApp.Controllers
 {
@@ -143,10 +144,16 @@ namespace AlrightSocialWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var postShare = await _context.PostShare.FindAsync(id);
+            var postShare = await _context.PostShare.FirstOrDefaultAsync(x => x.PostID == id && x.UserEmail == HttpContext.Session.GetString("email"));
+            var notification = await _context.Notification.FirstOrDefaultAsync(x => x.ID == postShare.NotificationID);
             _context.PostShare.Remove(postShare);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (notification != null)
+            {
+                _context.Notification.Remove(notification);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("ManagePostPage", "Post");
         }
 
         private bool PostShareExists(int id)

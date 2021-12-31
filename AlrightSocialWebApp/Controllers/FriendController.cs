@@ -168,6 +168,17 @@ namespace AlrightSocialWebApp.Controllers
         {
             var friend = await _context.Friend.FirstOrDefaultAsync(m => m.UserEmail == HttpContext.Session.GetString("email") && m.FriendEmail == EmailAddress);
             var friend1 = await _context.Friend.FirstOrDefaultAsync(m => m.FriendEmail == HttpContext.Session.GetString("email") && m.UserEmail == EmailAddress);
+            var chat = await _context.Chats.FirstOrDefaultAsync(m => (m.User1 == HttpContext.Session.GetString("email") && m.User2 == EmailAddress) || (m.User2 == HttpContext.Session.GetString("email") && m.User1 == EmailAddress));
+            if (chat != null)
+            {
+                var messages = _context.Message.Where(m => m.ChatId == chat.Id);
+                foreach (var item in messages)
+                {
+                    _context.Message.Remove(item);
+                }
+                _context.Chats.Remove(chat);
+                _context.SaveChanges();
+            }
             _context.Friend.Remove(friend);
             _context.Friend.Remove(friend1);
             await _context.SaveChangesAsync();
