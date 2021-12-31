@@ -41,7 +41,7 @@ CREATE TABLE Notification (
 	ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
 	UserEmail NVARCHAR(255) NOT NULL,
 	Content NVARCHAR(MAX),
-	PostID int NOT NULL,
+	PostID int,
 	Time DATETIME,
 	IsRead BIT,
 	FOREIGN KEY (UserEmail) REFERENCES Users(EmailAddress),
@@ -111,7 +111,6 @@ CREATE TABLE BlockedEmail (
 
 CREATE TABLE SuspendedUser (
 	SuspendedEmail NVARCHAR(255) NOT NULL,
-	Duration int,
 	FOREIGN KEY (SuspendedEmail) REFERENCES Users(EmailAddress)
 )
 
@@ -407,3 +406,10 @@ FROM Chats
 	ON Share.UserEmail=Friend.FriendEmail
 	INNER JOIN Users ON Users.EmailAddress=Friend.FriendEmail
 ORDER BY NumOfMess, NumOfShare, NumOfComment, NumOfLike DESC
+
+SELECT EmailAddress, name, sex, DateOfBirth, PhoneNumber, AvatarURL, ISNULL(Post.NumOfPost,0) AS [NumOfPost]
+FROM Users INNER JOIN (SELECT Author, Count(ID) AS [NumOfPost] FROM Post GROUP BY Author) AS [Post] ON Users.EmailAddress=Post.Author
+
+SELECT Post.ID,Title, Content,Author, ISNULL(LikeTable.[Like], 0) AS[Like] , ISNULL(CommentTable.[Comment], 0) AS[Comment], ISNULL(ShareTable.[Share], 0) AS[Share]  
+FROM Post 
+LEFT JOIN(SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN(SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN(SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Post.Author = Users.EmailAddress

@@ -1,28 +1,28 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AlrightSocialWebApp.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AlrightSocialWebApp.Models;
 
-namespace AlrightSocialWebApp.Controllers
+namespace AlrightSocialWebApp.Areas.Admin.Controllers
 {
     public class LogoutController : Controller
     {
-        DataContext db = new DataContext();
-        [HttpGet]
-        [Route("logout")]
+
+        [Area("Admin")]
         public IActionResult Logout()
         {
-            var account = db.Users.SingleOrDefault(a => a.EmailAddress.Equals(HttpContext.Session.GetString("email")));
+            var account = db.Administrator.SingleOrDefault(a => a.EmailAddress.Equals(HttpContext.Session.GetString("email")));
             account.SignInStatus = "Offline";
-            db.Users.Update(account);
+            db.Administrator.Update(account);
             db.SaveChanges();
             HttpContext.Session.Remove("email");
             HttpContext.Session.Remove("name");
             HttpContext.Session.Remove("AvatarURL");
-            return RedirectToAction("Index", "HomePage");
+            return RedirectToAction("Index","Home");
         }
+        private DataContext db = new DataContext();
     }
 }

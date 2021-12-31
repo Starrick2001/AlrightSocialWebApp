@@ -25,13 +25,13 @@ namespace AlrightSocialWebApp.Controllers
         [HttpPost("[action]")]
         public IActionResult SearchPublicPost(string searchString)
         {
-            List<object> list = _context.SearchPublicPost("%"+searchString+"%");
-            return View("SearchPost",list);
+            List<object> list = _context.SearchPublicPost("%" + searchString + "%");
+            return View("SearchPost", list);
         }
         [HttpPost("[action]")]
         public IActionResult SearchPost(string searchString)
         {
-            List<object> list = _context.SearchPost(HttpContext.Session.GetString("email"),"%" + searchString + "%");
+            List<object> list = _context.SearchPost(HttpContext.Session.GetString("email"), "%" + searchString + "%");
             return View(list);
         }
 
@@ -171,14 +171,7 @@ namespace AlrightSocialWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var post = await _context.Post.FindAsync(id);
-            var comments = _context.PostComment.Where(m => m.PostID == post.ID);
-            foreach (var item in comments)
-            {
-                var result = new PostCommentController().Delete(item.ID);
-            }
-            _context.Post.Remove(post);
-            await _context.SaveChangesAsync();
+            _context.DeletePost(id);
             return RedirectToAction("ManagePostPage", "Post");
         }
 

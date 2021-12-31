@@ -6,7 +6,7 @@ namespace AlrightSocialWebApp.Models
     public class Administrator
     {
         [Key]
-        public string EmailAdress { get; set; }
+        public string EmailAddress { get; set; }
         [Required]
         public string Password { get; set; }
         public string Name { get; set; }

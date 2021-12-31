@@ -34,6 +34,7 @@ namespace AlrightSocialWebApp.Models
               .HasKey(o => new { o.UserEmail, o.BlockedUser });
         }
         public DbSet<User> Users { get; set; }
+        public DbSet<SuspendedUser> SuspendedUser { get; set; }
         public User GetUserInfo(string EmailAddress)
         {
             User user = new User();
@@ -79,6 +80,42 @@ namespace AlrightSocialWebApp.Models
             cmd.Parameters.AddWithValue("@Privacy", p.Privacy);
             conn.Open();
             return cmd.ExecuteNonQuery();
+            conn.Close();
+        }
+
+        public void DeletePost(int PostID)
+        {
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query = "DELETE FROM PostLike WHERE PostID=@PostID";
+            SqlCommand cmd = new SqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@PostID", PostID);
+            conn.Open();
+            cmd.ExecuteNonQuery();
+            conn.Close();
+            query = "DELETE FROM PostComment WHERE PostID=@PostID";
+            cmd = new SqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@PostID", PostID);
+            conn.Open();
+            cmd.ExecuteNonQuery();
+            conn.Close();
+            query = "DELETE FROM PostShare WHERE PostID=@PostID";
+            cmd = new SqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@PostID", PostID);
+            conn.Open();
+            cmd.ExecuteNonQuery();
+            conn.Close();
+            query = "DELETE FROM Notification WHERE PostID=@PostID";
+            cmd = new SqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@PostID", PostID);
+            conn.Open();
+            cmd.ExecuteNonQuery();
+            conn.Close();
+            query = "DELETE FROM Post WHERE ID=@PostID";
+            cmd = new SqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@PostID", PostID);
+            conn.Open();
+            cmd.ExecuteNonQuery();
             conn.Close();
         }
 
@@ -658,6 +695,7 @@ namespace AlrightSocialWebApp.Models
         public DbSet<AlrightSocialWebApp.Models.Message> Message { get; set; }
         public DbSet<AlrightSocialWebApp.Models.Chat> Chats { get; set; }
         public DbSet<AlrightSocialWebApp.Models.PostShare> PostShare { get; set; }
+        public DbSet<AlrightSocialWebApp.Models.Administrator> Administrator { get; set; }
 
         public void InsertShare(PostShare share)
         {

@@ -6,7 +6,5 @@ namespace AlrightSocialWebApp.Models
     {
         [Key]
         public string SuspendedEmail { get; set; }
-        [Required]
-        public int Duration { get; set; }
     }
 }

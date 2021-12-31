@@ -12,6 +12,6 @@ namespace AlrightSocialWebApp.Models
         public string Content { get; set; }
         public DateTime Time { get; set; }
         public bool IsRead { get; set; }
-        public int PostID { get; set; }
+        public int? PostID { get; set; }
     }
 }

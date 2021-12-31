@@ -123,7 +123,7 @@ namespace AlrightSocialWebApp.Controllers
         {
             var notification = await _context.Notification
                 .FirstOrDefaultAsync(m => m.ID == id);
-            int PostID = notification.PostID;
+            int? PostID = notification.PostID;
             notification.IsRead = true;
             _context.Update(notification);
             await _context.SaveChangesAsync();
