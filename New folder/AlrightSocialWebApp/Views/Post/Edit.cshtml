@@ -1,0 +1,53 @@
+﻿@model AlrightSocialWebApp.Models.Post
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<head>
+    <link rel="stylesheet" href="~/css/ProfilePage.css" />
+    <script src="~/ckeditor/ckeditor.js"></script>
+    
+</head>
+<form method="Post" asp-action="Edit">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="ID" />
+    <div class="form-group">
+        <label asp-for="Title" class="control-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Content" class="control-label"></label>
+        <textarea class="status-textarea form-control" placeholder="Hãy viết gì đó.." id="editor1" asp-for="Content"></textarea>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input asp-for="TimeCreate" class="form-control" hidden />
+    </div>
+    <div class="form-group">
+        <input asp-for="TimeModified" class="form-control" hidden />
+    </div>
+    <div class="form-group">
+        <input asp-for="Author" class="form-control" hidden />
+    </div>
+    <div class="form-group">
+        <label for="input-privacy" style="color:#1f1c2e " class="my-2">Quyền riêng tư</label>
+        <select class="form-control" asp-for="Privacy" id="input-privacy">
+            <option value="Public">Công khai</option>
+            <option value="Friend">Bạn bè</option>
+            <option value="OnlyMe">Chỉ mình tôi</option>
+        </select>
+        <span asp-validation-for="Privacy" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Lưu" class="btn btn-primary" />
+    </div>
+</form>
+<script>
+    var editor = CKEDITOR.replace('editor1', {
+        height: 400,
+        filebrowserUploadUrl: '/Post/UploadCKEditor',
+        filebrowserBrowseUrl: '/Post/BrowseCKEditor'
+    });
+</script>

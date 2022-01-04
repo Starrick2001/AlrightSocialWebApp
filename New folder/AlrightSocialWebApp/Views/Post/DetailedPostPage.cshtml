@@ -1,0 +1,248 @@
+﻿@model dynamic
+@using Microsoft.AspNetCore.Http;
+
+@{
+    ViewData["Title"] = @Html.Raw(@Model.Post.GetType().GetProperty("Title").GetValue(Model.Post, null));
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<head>
+    <link rel="stylesheet" href="~/css/DetailedPostPage.css" />
+</head>
+
+<section class="main" style="overflow: auto;flex:2">
+    <div class="wrapper">
+        <div class="left-col">
+
+            <div class="post">
+                <div class="info">
+                    <a href="/ProfilePage?EmailAddress=@Model.Post.GetType().GetProperty("Author").GetValue(Model.Post, null)">
+                        <div class="user">
+                            <div class="profile-pic"><img src="@Model.Author.AvatarURL" alt="" width="40px" height="40px" style="border-radius: 50%"></div>
+                            <div class="col">
+                                <p class="username row" style="margin-bottom:0px">@Model.Author.name</p>
+                                <div class="album-date row" style="margin-left: 10px; font-size: 15px; color: #595c6c;">
+                                    <div>
+                                        @Model.Post.GetType().GetProperty("TimeModified").GetValue(Model.Post, null)
+                                    </div>
+                                    @if (Model.Post.GetType().GetProperty("Privacy").GetValue(Model.Post, null).ToString() == "Public")
+                                    {
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-globe mx-2" viewBox="0 0 16 16">
+                                            <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm7.5-6.923c-.67.204-1.335.82-1.887 1.855A7.97 7.97 0 0 0 5.145 4H7.5V1.077zM4.09 4a9.267 9.267 0 0 1 .64-1.539 6.7 6.7 0 0 1 .597-.933A7.025 7.025 0 0 0 2.255 4H4.09zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a6.958 6.958 0 0 0-.656 2.5h2.49zM4.847 5a12.5 12.5 0 0 0-.338 2.5H7.5V5H4.847zM8.5 5v2.5h2.99a12.495 12.495 0 0 0-.337-2.5H8.5zM4.51 8.5a12.5 12.5 0 0 0 .337 2.5H7.5V8.5H4.51zm3.99 0V11h2.653c.187-.765.306-1.608.338-2.5H8.5zM5.145 12c.138.386.295.744.468 1.068.552 1.035 1.218 1.65 1.887 1.855V12H5.145zm.182 2.472a6.696 6.696 0 0 1-.597-.933A9.268 9.268 0 0 1 4.09 12H2.255a7.024 7.024 0 0 0 3.072 2.472zM3.82 11a13.652 13.652 0 0 1-.312-2.5h-2.49c.062.89.291 1.733.656 2.5H3.82zm6.853 3.472A7.024 7.024 0 0 0 13.745 12H11.91a9.27 9.27 0 0 1-.64 1.539 6.688 6.688 0 0 1-.597.933zM8.5 12v2.923c.67-.204 1.335-.82 1.887-1.855.173-.324.33-.682.468-1.068H8.5zm3.68-1h2.146c.365-.767.594-1.61.656-2.5h-2.49a13.65 13.65 0 0 1-.312 2.5zm2.802-3.5a6.959 6.959 0 0 0-.656-2.5H12.18c.174.782.282 1.623.312 2.5h2.49zM11.27 2.461c.247.464.462.98.64 1.539h1.835a7.024 7.024 0 0 0-3.072-2.472c.218.284.418.598.597.933zM10.855 4a7.966 7.966 0 0 0-.468-1.068C9.835 1.897 9.17 1.282 8.5 1.077V4h2.355z" />
+                                        </svg>
+                                    }
+                                    else
+                                        @if (Model.Post.GetType().GetProperty("Privacy").GetValue(Model.Post, null).ToString() == "Friend")
+                                    {
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill mx-2" viewBox="0 0 16 16">
+                                            <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                                            <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z" />
+                                            <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z" />
+                                        </svg>
+                                    }
+                                    else
+                                        @if (Model.Post.GetType().GetProperty("Privacy").GetValue(Model.Post, null).ToString() == "OnlyMe")
+                                    {
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock-fill mx-2" viewBox="0 0 16 16">
+                                            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
+                                        </svg>
+                                    }
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        <img src="img/option.PNG" class="options" alt="">
+                        @if (String.Compare(Context.Session.GetString("email"), @Model.Post.GetType().GetProperty("Author").GetValue(Model.Post, null).ToString()) == 0)
+                        {
+                            <button class="project-btn-more" id="more-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical">
+                                    <circle cx="12" cy="12" r="1" />
+                                    <circle cx="12" cy="5" r="1" />
+                                    <circle cx="12" cy="19" r="1" />
+                                </svg>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="more-btn">
+
+                                <form asp-controller="Post" asp-action="Delete" asp-route-id="@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)" method="post">
+                                    <button type="submit" class="dropdown-item">Xoá</button>
+                                </form>
+                                <a class="dropdown-item" href="/post/edit?id=@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)">Sửa</a>
+
+                            </div>
+                        }
+                    </div>
+                    <h3 class="text-center">@Html.Raw(@Model.Post.GetType().GetProperty("Title").GetValue(Model.Post, null))</h3>
+                    <div class="m-4">
+                        @Html.Raw(@Model.Post.GetType().GetProperty("Content").GetValue(Model.Post, null))
+                    </div>
+                    <div class="post-content">
+                        <div class="reaction-wrapper">
+                            @using (Html.BeginForm("InsertOrDeleteLike", "PostLike", new { PostID = Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null), UserEmail = Model.Post.GetType().GetProperty("Author").GetValue(Model.Post, null) }, FormMethod.Post))
+                            {
+                                <button class="btn album-action @(Context.Session.GetString("email") != null ? (Model.isLiked == true ? "active" : "a") : "")">
+                                    <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                                    </svg>
+                                    @Model.Post.GetType().GetProperty("Like").GetValue(Model.Post, null)
+                                </button>
+                            }
+                            <a href="/post/DetailedPostPage?id=@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)" class="album-action">
+                                <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
+                                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                                </svg>
+                                @Model.Post.GetType().GetProperty("Comment").GetValue(Model.Post, null)
+                            </a>
+                            <a href="/PostShare/Create?PostID=@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)" class="album-action">
+                                <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
+                                    <path d="M17 1l4 4-4 4" />
+                                    <path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4" />
+                                    <path d="M21 13v2a4 4 0 01-4 4H3" />
+                                </svg>
+                                @Model.Post.GetType().GetProperty("Share").GetValue(Model.Post, null)
+                            </a>
+                        </div>
+                        @foreach (var comment in Model.Comment)
+                        {
+                            <div class="row">
+
+                                <div class="col-11">
+                                    <p class="description"><span>@comment.UserEmail </span> @comment.Content</p>
+                                    <p class="post-time">@comment.Time</p>
+                                </div>
+                                @if (Context.Session.GetString("email") == comment.UserEmail)
+                                {
+                                    <button class="project-btn-more col" id="more-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical">
+                                            <circle cx="12" cy="12" r="1" />
+                                            <circle cx="12" cy="5" r="1" />
+                                            <circle cx="12" cy="19" r="1" />
+                                        </svg>
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="more-btn">
+                                        <form asp-controller="PostComment" asp-action="Delete" asp-route-id="@comment.ID" method="post">
+                                            <button type="submit" class="dropdown-item">Xoá</button>
+                                        </form>
+                                        <form asp-controller="PostComment" asp-action="Edit" asp-route-id="@comment.ID" method="get">
+                                            <button type="submit" class="dropdown-item">Sửa</button>
+                                        </form>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                    @if (Context.Session.GetString("email") != null)
+                    {
+                        @using (Html.BeginForm("Create", "PostComment", new { PostID = Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null) }, FormMethod.Post))
+                        {
+                            <div class="comment-wrapper">
+                                <img src="@Context.Session.GetString("avatarUrl")" class="icon mx-2" alt="" style="border-radius: 50%">
+                                <input type="text" class="comment-box" name="Content" placeholder="Thêm bình luận">
+                                <button class="comment-btn py-2" type="submit">Bình luận</button>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+    @*<div class="messages-section">
+        <button class="messages-close">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="15" y1="9" x2="9" y2="15" />
+                <line x1="9" y1="9" x2="15" y2="15" />
+            </svg>
+        </button>
+        <div class="projects-section-header">
+            <p>Client Messages</p>
+        </div>
+        <div class="messages">
+            <div class="message-box">
+                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2550&q=80" alt="profile image">
+                <div class="message-content">
+                    <div class="message-header">
+                        <div class="name">Stephanie</div>
+                        <div class="star-checkbox">
+                            <input type="checkbox" id="star-1">
+                            <label for="star-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                </svg>
+                            </label>
+                        </div>
+                    </div>
+                    <p class="message-line">
+                        I got your first assignment. It was quite good. 🥳 We can continue with the next assignment.
+                    </p>
+                    <p class="message-line time">
+                        Dec, 12
+                    </p>
+                </div>
+            </div>
+            <div class="message-box">
+                <img src="https://images.unsplash.com/photo-1600486913747-55e5470d6f40?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2550&q=80" alt="profile image">
+                <div class="message-content">
+                    <div class="message-header">
+                        <div class="name">Mark</div>
+                        <div class="star-checkbox">
+                            <input type="checkbox" id="star-2">
+                            <label for="star-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                </svg>
+                            </label>
+                        </div>
+                    </div>
+                    <p class="message-line">
+                        Hey, can tell me about progress of project? I'm waiting for your response.
+                    </p>
+                    <p class="message-line time">
+                        Dec, 12
+                    </p>
+                </div>
+            </div>
+            <div class="message-box">
+                <img src="https://images.unsplash.com/photo-1543965170-4c01a586684e?ixid=MXwxMjA3fDB8MHxzZWFyY2h8NDZ8fG1hbnxlbnwwfDB8MHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=60" alt="profile image">
+                <div class="message-content">
+                    <div class="message-header">
+                        <div class="name">David</div>
+                        <div class="star-checkbox">
+                            <input type="checkbox" id="star-3">
+                            <label for="star-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                </svg>
+                            </label>
+                        </div>
+                    </div>
+                    <p class="message-line">
+                        Awesome! 🤩 I like it. We can schedule a meeting for the next one.
+                    </p>
+                    <p class="message-line time">
+                        Dec, 12
+                    </p>
+                </div>
+            </div>
+            <div class="message-box">
+                <img src="https://images.unsplash.com/photo-1533993192821-2cce3a8267d1?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTl8fHdvbWFuJTIwbW9kZXJufGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=60" alt="profile image">
+                <div class="message-content">
+                    <div class="message-header">
+                        <div class="name">Jessica</div>
+                        <div class="star-checkbox">
+                            <input type="checkbox" id="star-4">
+                            <label for="star-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                </svg>
+                            </label>
+                        </div>
+                    </div>
+                    <p class="message-line">
+                        I am really impressed! Can't wait to see the final result.
+                    </p>
+                    <p class="message-line time">
+                        Dec, 11
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>*@

@@ -104,6 +104,10 @@ namespace AlrightSocialWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
+            if (_context.isSuspended(HttpContext.Session.GetString("email")) == true)
+            {
+                return RedirectToAction("SuspendedNotification", "HomePage");
+            }
             if (id == null)
             {
                 return NotFound();
@@ -125,6 +129,11 @@ namespace AlrightSocialWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Post post)
         {
+            if (_context.isSuspended(HttpContext.Session.GetString("email")) == true)
+            {
+                return RedirectToAction("SuspendedNotification", "HomePage");
+            }
+            post.TimeModified = DateTime.Now;
             if (ModelState.IsValid)
             {
                 try

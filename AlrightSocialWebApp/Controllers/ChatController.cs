@@ -33,10 +33,10 @@ namespace AlrightSocialWebApp.Controllers
             mymodel.Chats = chat;
             mymodel.Friends = _context.GetListOfFriends(HttpContext.Session.GetString("email"));
 
-            return View(mymodel) ;
+            return View(mymodel);
         }
         [HttpPost("[action]/{connectionId}/{roomName}")]
-        public async Task<IActionResult> JoinRoom (string connectionId, string roomName)
+        public async Task<IActionResult> JoinRoom(string connectionId, string roomName)
         {
             _chat.Groups.AddToGroupAsync(connectionId, roomName);
             return Ok();
@@ -53,7 +53,6 @@ namespace AlrightSocialWebApp.Controllers
             string message,
             [FromServices] IHubContext<ChatHub> chat)
         {
-
             var Message = new Message
             {
                 ChatId = chatId,
@@ -61,8 +60,19 @@ namespace AlrightSocialWebApp.Controllers
                 SenderEmail = HttpContext.Session.GetString("email"),
                 Time = DateTime.Now
             };
+            var getChat = await _context.Chats.FirstOrDefaultAsync(m => m.Id == chatId);
+            string receiver = (getChat.User1.ToString() == HttpContext.Session.GetString("email") ? getChat.User2.ToString() : getChat.User1.ToString());
+            Notification noti = new Notification
+            {
+                UserEmail = receiver,
+                Content = HttpContext.Session.GetString("email") + " đã gửi tin nhắn cho bạn",
+                PostID = null,
+                IsRead = false,
+                Time = DateTime.Now
+            };
             _context.Message.Add(Message);
             await _context.SaveChangesAsync();
+
             await chat.Clients.Group(chatId.ToString())
                 .SendAsync("RecieveMessage", new
                 {
@@ -71,7 +81,8 @@ namespace AlrightSocialWebApp.Controllers
                     Time = Message.Time.ToString("dd/MM/yyyy hh:mm:ss"),
                     ChatId = Message.ChatId
                 });
-
+            _context.Notification.Add(noti);
+            await _context.SaveChangesAsync();
             return Ok();
         }
         //[HttpPost]

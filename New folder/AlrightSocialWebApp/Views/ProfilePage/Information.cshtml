@@ -1,0 +1,130 @@
+﻿@model dynamic;
+@{
+    ViewData["Title"] = "Thông tin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using Microsoft.AspNetCore.Http;
+
+<head>
+    <link rel="stylesheet" href="~/css/ProfilePage.css" />
+    <script src="~/ckeditor/ckeditor.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="main">
+            <div class="main-container">
+                <div class="profile">
+                    <div class="profile-avatar">
+                        <div class="position-relative">
+                            <img src="@Model.User.AvatarURL.ToString()" alt="" class="profile-img" />
+                            <form asp-controller="ProfilePage" asp-action="UploadAvatar" method="post" id="form" enctype="multipart/form-data">
+                                <input type="file" id="file" style="" name="avatar" onchange="this.form.submit()" hidden />
+                                <label for="file" class="btn btn-outline-dark position-absolute translate-middle badge border border-light rounded-circle" style="left: 75%; top:75%">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-camera" viewBox="0 0 16 16">
+                                        <path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1v6zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2z" />
+                                        <path d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z" />
+                                    </svg>
+                                </label>
+                            </form>
+                        </div>
+                        <div class="profile-name">@Model.User.name</div>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1508247967583-7d982ea01526?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2250&q=80" alt="" class="profile-cover">
+
+                    <div class="profile-menu">
+                        <a href="/ProfilePage?EmailAddress=@Model.User.EmailAddress">
+                            <button class="profile-menu-link active">Bài viết</button>
+                        </a>
+                        @if (Context.Session.GetString("email") == Model.User.EmailAddress)
+                        {
+                            <a href="/ProfilePage/Information?EmailAddress=@Context.Session.GetString("email")">
+                                <button class="profile-menu-link">Thông tin</button>
+                            </a>
+                            <a href="/ChangePassword/ChangePasswordGUI?EmailAddress=@Context.Session.GetString("email")">
+                                <button class="profile-menu-link">Đổi mật khẩu</button>
+                            </a>
+                            <a href="/Friend/ManageFriendGUI?EmailAddress=@Model.User.EmailAddress">
+                                <button class="profile-menu-link">Danh sách bạn bè</button>
+                            </a>
+                        }
+                    </div>
+                </div>
+                <div class="timeline h-100">
+                    <div class="timeline-right p-0">
+                        <div class="status box">
+                            @if (TempData["error"] != null)
+                            {
+                                <div class="alert alert-danger" role="alert">
+                                    @TempData["error"]
+                                </div>
+                            }
+                            @if (TempData["success"] != null)
+                            {
+                                <div class="alert alert-success" role="success">
+                                    @TempData["success"]
+                                </div>
+                            }
+                            <form asp-action="Edit" asp-controller="UserInformation" class="m-3 py-2" method="post">
+                                <input type="hidden" name="EmailAddress" value="@Model.User.EmailAddress"/>
+                                <div class="form-group">
+                                    <label for="Password" class="control-label">Xác minh mật khẩu</label>
+                                    <input id="Password" type="password" name="Password" class="form-control" value="" />
+                                    
+                                </div>
+                                <div class="form-group">
+                                    <label for="name" class="control-label" >Tên</label>
+                                    <input id="name"name="name" class="form-control" value="@Model.User.name"/>
+                                    
+                                </div>
+                                <div class="form-group">
+                                    <label for="sex" class="control-label">Giới tính</label>
+                                    <input id="sex" name="sex" class="form-control" value="@Model.User.sex"/>
+                                    
+                                </div>
+                                <div class="form-group">
+                                    <label for="DateOfBirth" class="control-label">Ngày sinh</label>
+                                    <input type="date" value="@Model.User.DateOfBirth.ToString("yyyy-MM-dd")" name="DateOfBirth" id="DateOfBirth" class="form-control" />
+                                                                    </div>
+                                <div class="form-group">
+                                    <label for="PhoneNumber" class="control-label">Số điện thoại</label>
+                                    <input id="PhoneNumber" name="PhoneNumber" class="form-control" value="@Model.User.PhoneNumber"/>
+                                </div>
+                                <input name="SignInStatus" class="form-control" hidden value="@Model.User.SignInStatus"/>
+                                <input name="AvatarURL" class="form-control" hidden  value="@Model.User.AvatarURL"/>
+                                <div class="form-group">
+                                    <input type="submit" value="Lưu" class="btn btn-primary" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-side">
+            <div class="side-wrapper contacts">
+                <div class="side-title">Liên hệ</div>
+                @foreach (var item in Model.Friends)
+                {
+                    <div class="user">
+                        <img src="@item.GetType().GetProperty("AvatarURL").GetValue(item, null)" class="user-img">
+                        <div class="username">
+                            <a href="/Chat/ChatPageGUI?ChatId=@item.GetType().GetProperty("ChatId").GetValue(item, null)">
+                                @item.GetType().GetProperty("name").GetValue(item, null)
+                            </a>
+                            <div class="user-status @(item.GetType().GetProperty("SignInStatus").GetValue(item, null).ToString() == "Offline" ? "offline" : "")"></div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="overlay"></div>
+    </div>
+    <script>
+        var editor = CKEDITOR.replace('editor1', {
+            height: 400,
+            filebrowserUploadUrl: '/Post/UploadCKEditor',
+            filebrowserBrowseUrl: '/Post/BrowseCKEditor'
+        });
+    </script>
+
+</body>

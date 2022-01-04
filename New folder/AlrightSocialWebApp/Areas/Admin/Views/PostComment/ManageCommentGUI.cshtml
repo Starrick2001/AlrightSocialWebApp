@@ -1,0 +1,35 @@
+﻿@model IEnumerable<AlrightSocialWebApp.Models.PostComment>;
+@{
+    ViewData["Title"] = "ManageCommentGUI";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Nội dung</th>
+            <th>Thời gian</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.UserEmail</td>
+                <td>@item.Content</td>
+                <td>@item.Time</td>
+                <td>
+                    @using (Html.BeginForm("DeletePostCommentForAdmin", "PostComment", new { area = "Admin", ID = item.ID }, FormMethod.Post))
+                    {
+                        <button class="btn btn-danger">
+                            Xoá
+                        </button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
