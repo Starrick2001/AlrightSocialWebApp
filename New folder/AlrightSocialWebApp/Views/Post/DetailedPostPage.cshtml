@@ -22,7 +22,11 @@
                                 <p class="username row" style="margin-bottom:0px">@Model.Author.name</p>
                                 <div class="album-date row" style="margin-left: 10px; font-size: 15px; color: #595c6c;">
                                     <div>
-                                        @Model.Post.GetType().GetProperty("TimeModified").GetValue(Model.Post, null)
+                                        @Model.Post.GetType().GetProperty("TimeCreate").GetValue(Model.Post, null)
+                                        @if (Model.Post.GetType().GetProperty("TimeCreate").GetValue(Model.Post, null) != Model.Post.GetType().GetProperty("TimeModified").GetValue(Model.Post, null))
+                                        {
+                                            <span class="badge badge-secondary">Đã chỉnh sửa</span>
+                                        }
                                     </div>
                                     @if (Model.Post.GetType().GetProperty("Privacy").GetValue(Model.Post, null).ToString() == "Public")
                                     {

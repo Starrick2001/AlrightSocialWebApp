@@ -18,6 +18,10 @@ namespace AlrightSocialWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> InsertOrDeleteLike(string UserEmail, int PostID)
         {
+            if (_context.isSuspended(HttpContext.Session.GetString("email")) == true)
+            {
+                return RedirectToAction("SuspendedNotification", "HomePage");
+            }
             var postLike = _context.PostLike.FirstOrDefault(l => l.UserEmail == HttpContext.Session.GetString("email") && l.PostID == PostID);
             if (postLike != null)
             {
