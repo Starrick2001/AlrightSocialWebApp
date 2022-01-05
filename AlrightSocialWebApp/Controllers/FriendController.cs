@@ -185,6 +185,22 @@ namespace AlrightSocialWebApp.Controllers
             return RedirectToAction("ManageFriendGUI");
         }
 
+        [HttpPost("[action]")]
+        public IActionResult SearchFriend(string searchString)
+        {         
+            List<object> friends = _context.SearchFriend(HttpContext.Session.GetString("email"), "%" + searchString + "%");
+            List<object> list = new List<object>();
+            foreach (var item in friends)
+            {
+                list.Add(_context.GetUserInfo(item.GetType().GetProperty("FriendEmail").GetValue(item, null).ToString()));
+            }
+            dynamic mymodel = new ExpandoObject();
+            mymodel.Friends = list;
+            mymodel.FriendRequests = _context.GetListOfFriendRequests(HttpContext.Session.GetString("email"));
+            mymodel.Chat = friends;
+            return View("ManageFriendGUI",new { mymodel });
+        }
+
         private bool FriendExists(string id)
         {
             return _context.Friend.Any(e => e.UserEmail == id);

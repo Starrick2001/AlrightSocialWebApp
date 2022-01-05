@@ -688,6 +688,37 @@ namespace AlrightSocialWebApp.Models
             conn.Close();
             return list;
         }
+
+        public List<object> SearchFriend(string EmailAddress, string searchString)
+        {
+            List<object> list = new List<object>();
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query = "SELECT FriendEmail, AvatarURL, name, SignInStatus FROM Friend, Users WHERE UserEmail=@EmailAddress AND FriendEmail=Users.EmailAddress AND name LIKE @searchString";
+            var command = new SqlCommand(query, conn);
+            command.Parameters.AddWithValue("EmailAddress", EmailAddress);
+            command.Parameters.AddWithValue("searchString", searchString);
+            conn.Open();
+            var reader = command.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    list.Add(new
+                    {
+                        FriendEmail = reader["FriendEmail"].ToString(),
+                        AvatarURL = reader["AvatarURL"].ToString(),
+                        name = reader["name"].ToString(),
+                        SignInStatus = reader["SignInStatus"].ToString(),
+                        ChatId = findChat(reader["FriendEmail"].ToString(), EmailAddress),
+                        LastMessage = findLastMessage(findChat(reader["FriendEmail"].ToString(), EmailAddress)),
+                        LastTime = findLastTime(findChat(reader["FriendEmail"].ToString(), EmailAddress))
+                    });
+                }
+            }
+            conn.Close();
+            return list;
+        }
         public List<FriendRequest> GetListOfFriendRequests(string EmailAddress)
         {
             List<FriendRequest> list = new List<FriendRequest>();
