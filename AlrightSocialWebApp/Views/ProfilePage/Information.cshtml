@@ -33,12 +33,12 @@
 
                     <div class="profile-menu">
                         <a href="/ProfilePage?EmailAddress=@Model.User.EmailAddress">
-                            <button class="profile-menu-link active">Bài viết</button>
+                            <button class="profile-menu-link">Bài viết</button>
                         </a>
                         @if (Context.Session.GetString("email") == Model.User.EmailAddress)
                         {
                             <a href="/ProfilePage/Information?EmailAddress=@Context.Session.GetString("email")">
-                                <button class="profile-menu-link">Thông tin</button>
+                                <button class="profile-menu-link active">Thông tin</button>
                             </a>
                             <a href="/ChangePassword/ChangePasswordGUI?EmailAddress=@Context.Session.GetString("email")">
                                 <button class="profile-menu-link">Đổi mật khẩu</button>

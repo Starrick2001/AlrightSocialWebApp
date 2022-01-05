@@ -103,10 +103,10 @@ CREATE TABLE Message (
 
 CREATE TABLE BlockedEmail (
 	UserEmail NVARCHAR(255) NOT NULL,
-	BlockedEmail NVARCHAR(255) NOT NULL,
-	PRIMARY KEY (UserEmail, BlockedEmail),
+	BlockedUser NVARCHAR(255) NOT NULL,
+	PRIMARY KEY (UserEmail, BlockedUser),
 	FOREIGN KEY (UserEmail) REFERENCES Users(EmailAddress),
-	FOREIGN KEY (BlockedEmail) REFERENCES Users(EmailAddress)
+	FOREIGN KEY (BlockedUser) REFERENCES Users(EmailAddress)
 )
 
 CREATE TABLE SuspendedUser (
