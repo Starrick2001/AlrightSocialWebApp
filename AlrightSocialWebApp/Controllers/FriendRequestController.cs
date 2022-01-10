@@ -41,6 +41,8 @@ namespace AlrightSocialWebApp.Controllers
             var friendRequest = await _context.FriendRequest.FirstOrDefaultAsync(m => m.UserEmail == HttpContext.Session.GetString("email") && m.FriendEmail == FriendEmail);
             _context.FriendRequest.Remove(friendRequest);
             await _context.SaveChangesAsync();
+            string temp = isRequested(HttpContext.Session.GetString("email")).ToString();
+            HttpContext.Session.SetString("isRequested", temp);
             return RedirectToAction("ManageFriendRequestGUI");
         }
         [HttpPost, ActionName("AcceptFriendRequest")]
@@ -56,8 +58,22 @@ namespace AlrightSocialWebApp.Controllers
                 FriendEmail = FriendEmail
             };
             new FriendController().InsertFriend(friend);
+            string temp = isRequested(HttpContext.Session.GetString("email")).ToString();
+            HttpContext.Session.SetString("isRequested", temp);
             return RedirectToAction("ManageFriendRequestGUI");
         }
 
+        public bool isRequested(string EmailAddress)
+        {
+            bool flag = false;
+            var f = _context.FriendRequest
+                .Where(x => x.UserEmail == EmailAddress)
+                .OrderByDescending(y => y.Time);
+            foreach (var item in f)
+            {
+                flag = true;
+            }
+            return flag;
+        }
     }
 }

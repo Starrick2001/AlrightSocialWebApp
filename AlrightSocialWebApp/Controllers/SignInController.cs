@@ -31,6 +31,10 @@ namespace AlrightSocialWebApp.Controllers
                 HttpContext.Session.SetString("email", EmailAddress);
                 HttpContext.Session.SetString("name", account.name);
                 HttpContext.Session.SetString("avatarUrl", account.AvatarURL);
+                string temp = new NotificationController().isRead(EmailAddress).ToString();
+                HttpContext.Session.SetString("isReadNotification", temp);
+                temp = new FriendRequestController().isRequested(EmailAddress).ToString();
+                HttpContext.Session.SetString("isRequested", temp);
                 return RedirectToAction("Index", "HomePage");
             }
         }

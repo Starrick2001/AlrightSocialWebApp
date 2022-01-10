@@ -28,6 +28,22 @@ namespace AlrightSocialWebApp.Controllers
             return View(list);
         }
 
+        public bool isRead(string EmailAddress)
+        {
+            var notification = _context.Notification
+                .Where(x => x.UserEmail == EmailAddress)
+                .OrderByDescending(y => y.Time);
+            bool flag = true;
+            foreach (var item in notification)
+            {
+                if (item.IsRead == false)
+                {
+                    return false;
+                }
+            }
+            return flag;
+        }
+
         // GET: Notification/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -127,6 +143,8 @@ namespace AlrightSocialWebApp.Controllers
             notification.IsRead = true;
             _context.Update(notification);
             await _context.SaveChangesAsync();
+            string temp = isRead(HttpContext.Session.GetString("email")).ToString();
+            HttpContext.Session.SetString("isReadNotification", temp);
             return RedirectToAction("DetailedPostPage", "Post", new { id = PostID });
         }
 
@@ -156,6 +174,8 @@ namespace AlrightSocialWebApp.Controllers
                         throw;
                     }
                 }
+                string temp = isRead(HttpContext.Session.GetString("email")).ToString();
+                HttpContext.Session.SetString("isReadNotification", temp);
                 return RedirectToAction(nameof(Index));
             }
             return View("Index");
