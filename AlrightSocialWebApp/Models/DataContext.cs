@@ -628,9 +628,9 @@ namespace AlrightSocialWebApp.Models
             conn.Close();
         }
 
-        public List<PostComment> GetListOfComment(int PostID)
+        public List<object> GetListOfComment(int PostID)
         {
-            List<PostComment> list = new List<PostComment>();
+            List<object> list = new List<object>();
             SqlConnection conn = new SqlConnection();
             conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
             string query = "SELECT * FROM PostComment WHERE PostID=@PostID";
@@ -642,13 +642,14 @@ namespace AlrightSocialWebApp.Models
             {
                 while (reader.Read())
                 {
-                    list.Add(new PostComment()
+                    list.Add(new 
                     {
                         ID = (int)reader["ID"],
                         UserEmail = reader["UserEmail"].ToString(),
+                        UserName = GetUserInfo(reader["UserEmail"].ToString()).name,
                         Content = reader["Content"].ToString(),
                         PostID = (int)reader["PostID"],
-                        Time = (DateTime)reader["Time"]
+                        Time = (DateTime)reader["Time"],
                     });
                 }
                 reader.Close();
@@ -807,7 +808,7 @@ namespace AlrightSocialWebApp.Models
             List<object> list = new List<object>();
             SqlConnection conn = new SqlConnection();
             conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
-            string query = "SELECT AvatarURL,name, FriendEmail, ISNULL(Mess.NumOfMess,0) AS [NumOfMess], ISNULL(LikeInfor.NumOfLike,0) AS [NumOfLike], ISNULL(Cmt.NumOfComment,0) AS [NumOfComment], ISNULL(Share.NumOfShare,0) AS [NumOfShare] FROM Chats  INNER JOIN  (SELECT Chats.Id, COUNT(Message.ID) NumOfMess FROM Chats INNER JOIN Message ON Message.ChatId=Chats.Id GROUP BY Chats.Id) AS [Mess]  ON Mess.ID=Chats.Id INNER JOIN  (SELECT FriendEmail FROM Friend  WHERE UserEmail=@EmailAddress) AS [Friend] ON (User1=Friend.FriendEmail AND User2=@EmailAddress) OR (User2=Friend.FriendEmail AND User1=@EmailAddress) LEFT JOIN  (SELECT UserEmail, COUNT(*) AS [NumOfLike] FROM PostLike INNER JOIN Post ON Post.ID=PostLike.PostID WHERE Author=@EmailAddress GROUP BY UserEmail) AS [LikeInfor]  ON LikeInfor.UserEmail=Friend.FriendEmail LEFT JOIN  (SELECT UserEmail, COUNT(*) AS [NumOfComment] FROM PostComment INNER JOIN Post ON Post.ID=PostComment.PostID WHERE Author=@EmailAddress GROUP BY UserEmail) AS [Cmt] ON Cmt.UserEmail=Friend.FriendEmail LEFT JOIN  (SELECT UserEmail, COUNT(*) AS [NumOfShare] FROM PostShare INNER JOIN Post ON Post.ID=PostShare.PostID WHERE Author=@EmailAddress GROUP BY UserEmail) AS [Share] ON Share.UserEmail=Friend.FriendEmail INNER JOIN Users ON Users.EmailAddress=Friend.FriendEmail ORDER BY NumOfMess, NumOfShare, NumOfComment, NumOfLike DESC";
+            string query = "SELECT AvatarURL,name, FriendEmail, ISNULL(Mess.NumOfMess,0) AS [NumOfMess], ISNULL(LikeInfor.NumOfLike,0) AS [NumOfLike], ISNULL(Cmt.NumOfComment,0) AS [NumOfComment], ISNULL(Share.NumOfShare,0) AS [NumOfShare] FROM Chats  INNER JOIN  (SELECT Chats.Id, COUNT(Message.ID) NumOfMess FROM Chats INNER JOIN Message ON Message.ChatId=Chats.Id GROUP BY Chats.Id) AS [Mess]  ON Mess.ID=Chats.Id INNER JOIN  (SELECT FriendEmail FROM Friend  WHERE UserEmail=@EmailAddress) AS [Friend] ON (User1=Friend.FriendEmail AND User2=@EmailAddress) OR (User2=Friend.FriendEmail AND User1=@EmailAddress) LEFT JOIN  (SELECT UserEmail, COUNT(*) AS [NumOfLike] FROM PostLike INNER JOIN Post ON Post.ID=PostLike.PostID WHERE Author=@EmailAddress GROUP BY UserEmail) AS [LikeInfor]  ON LikeInfor.UserEmail=Friend.FriendEmail LEFT JOIN  (SELECT UserEmail, COUNT(*) AS [NumOfComment] FROM PostComment INNER JOIN Post ON Post.ID=PostComment.PostID WHERE Author=@EmailAddress GROUP BY UserEmail) AS [Cmt] ON Cmt.UserEmail=Friend.FriendEmail LEFT JOIN  (SELECT UserEmail, COUNT(*) AS [NumOfShare] FROM PostShare INNER JOIN Post ON Post.ID=PostShare.PostID WHERE Author=@EmailAddress GROUP BY UserEmail) AS [Share] ON Share.UserEmail=Friend.FriendEmail INNER JOIN Users ON Users.EmailAddress=Friend.FriendEmail ORDER BY NumOfMess DESC, NumOfShare DESC, NumOfComment DESC, NumOfLike DESC";
             SqlCommand cmd1 = new SqlCommand(query, conn);
             conn.Open();
             cmd1.Parameters.AddWithValue("@EmailAddress", EmailAddress);

@@ -118,7 +118,9 @@ namespace AlrightSocialWebApp.Controllers
             {
                 try
                 {
-                    _context.Update(postComment);
+                    var postComment1 = _context.PostComment.Find(postComment.ID);
+                    postComment1.Content = postComment.Content;
+                    _context.Update(postComment1);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
