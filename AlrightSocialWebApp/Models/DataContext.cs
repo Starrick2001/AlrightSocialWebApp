@@ -32,6 +32,10 @@ namespace AlrightSocialWebApp.Models
                .HasKey(o => new { o.UserEmail, o.FriendEmail });
             modelBuilder.Entity<BlockedEmail>()
               .HasKey(o => new { o.UserEmail, o.BlockedUser });
+            modelBuilder.Entity<PostReport>()
+                .HasKey(o => new { o.EmailAddress, o.PostID });
+            modelBuilder.Entity<ReportUser>()
+                .HasKey(o => new { o.UserEmail, o.ReportedUser });
         }
         public DbSet<User> Users { get; set; }
         public DbSet<SuspendedUser> SuspendedUser { get; set; }
@@ -106,6 +110,12 @@ namespace AlrightSocialWebApp.Models
             cmd.ExecuteNonQuery();
             conn.Close();
             query = "DELETE FROM Notification WHERE PostID=@PostID";
+            cmd = new SqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@PostID", PostID);
+            conn.Open();
+            cmd.ExecuteNonQuery();
+            conn.Close();
+            query = "DELETE FROM PostReport WHERE PostID=@PostID";
             cmd = new SqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@PostID", PostID);
             conn.Open();
@@ -642,7 +652,7 @@ namespace AlrightSocialWebApp.Models
             {
                 while (reader.Read())
                 {
-                    list.Add(new 
+                    list.Add(new
                     {
                         ID = (int)reader["ID"],
                         UserEmail = reader["UserEmail"].ToString(),
@@ -750,6 +760,8 @@ namespace AlrightSocialWebApp.Models
         public DbSet<AlrightSocialWebApp.Models.Chat> Chats { get; set; }
         public DbSet<AlrightSocialWebApp.Models.PostShare> PostShare { get; set; }
         public DbSet<AlrightSocialWebApp.Models.Administrator> Administrator { get; set; }
+        public DbSet<AlrightSocialWebApp.Models.PostReport> PostReport { get; set; }
+        public DbSet<AlrightSocialWebApp.Models.ReportUser> ReportUser { get; set; }
 
         public void InsertShare(PostShare share)
         {
@@ -817,7 +829,8 @@ namespace AlrightSocialWebApp.Models
             {
                 while (reader.Read())
                 {
-                    list.Add(new { 
+                    list.Add(new
+                    {
                         name = reader["name"].ToString(),
                         AvatarURL = reader["AvatarURL"].ToString(),
                         FriendEmail = reader["FriendEmail"].ToString(),
@@ -830,6 +843,26 @@ namespace AlrightSocialWebApp.Models
                 reader.Close();
             }
             return list;
+        }
+
+        public int AmountOfReport(int PostID)
+        {
+            int temp = 0;
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query = "SELECT ISNULL(COUNT(EmailAddress),0) AS [Report] FROM PostReport WHERE PostID = @PostID";
+            SqlCommand cmd1 = new SqlCommand(query, conn);
+            conn.Open();
+            cmd1.Parameters.AddWithValue("@PostID", PostID);
+            var reader = cmd1.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    temp = (int)reader["Report"];
+                }
+            }
+            return temp;
         }
     }
 }

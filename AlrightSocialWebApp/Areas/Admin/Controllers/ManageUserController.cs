@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,9 +14,12 @@ namespace AlrightSocialWebApp.Areas.Admin.Controllers
         private DataContext _context = new DataContext();
         public IActionResult ManageUserGUI()
         {
-
-            return View(_context.Users.ToList());
+            dynamic mymodel = new ExpandoObject();
+            mymodel.Users = _context.Users.ToList();
+            mymodel.ReportUser = _context.ReportUser.ToList();
+            return View(mymodel);
         }
+
         public IActionResult ManageSuspendedUser()
         {
             return View(_context.SuspendedUser.ToList());

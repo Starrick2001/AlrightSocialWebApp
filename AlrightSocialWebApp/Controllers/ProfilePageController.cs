@@ -38,6 +38,21 @@ namespace AlrightSocialWebApp.Controllers
             }
             return View(mymodel);
         }
+
+        [HttpPost("[action]")]
+        public IActionResult Report(string UserEmail, string Content)
+        {
+            ReportUser reportUser = new ReportUser
+            {
+                UserEmail = HttpContext.Session.GetString("email"),
+                ReportedUser = UserEmail,
+                Content = Content,
+                Time = DateTime.Now
+            };
+            db.ReportUser.Add(reportUser);
+            db.SaveChanges();
+            return RedirectToAction("Index", "ProfilePage", new { EmailAddress = UserEmail });
+        }
         [Route("Information")]
         [HttpGet]
         public IActionResult Information(string EmailAddress)

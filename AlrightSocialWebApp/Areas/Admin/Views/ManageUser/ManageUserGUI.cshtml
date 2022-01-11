@@ -1,39 +1,54 @@
-﻿@model IEnumerable<AlrightSocialWebApp.Models.User>;
+﻿@model dynamic;
 
 @{
     ViewData["Title"] = "ManageUserGUI";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    int temp = 0;
 }
 
-<table class="table">
+<table class="table" style="">
     <thead>
         <tr>
             <th>Tên</th>
             <th>Email</th>
+            <th>Chi tiết báo cáo</th>
+            <th>Số lượng báo cáo</th>
             <th></th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.Users)
         {
-            <tr>
-                <td>@item.name</td>
-                <td>@item.EmailAddress</td>
-                <td>
-                    <a href="/ProfilePage?EmailAddress=@item.EmailAddress">
-                        <button class="btn btn-primary">Xem chi tiết</button>
-                    </a>
-                </td>
-                <td>
-                    @using (Html.BeginForm("InsertSuspendedUser", "ManageUser", new { area = "Admin", EmailAddress = item.EmailAddress }, FormMethod.Post))
+            temp = 0;
+        <tr>
+            <td>@item.name</td>
+            <td>@item.EmailAddress</td>
+            <td>
+                @foreach (var rp in Model.ReportUser)
+                {
+                    @if (rp.ReportedUser == item.EmailAddress)
                     {
-                        <button class="btn btn-danger">
-                            Cấm
-                        </button>
+                        temp++;
+                        <p>@rp.Content</p>
                     }
-                </td>
-            </tr>
-        }
+                }
+            </td>
+            <td>@temp</td>
+            <td>
+                <a href="/ProfilePage?EmailAddress=@item.EmailAddress">
+                    <button class="btn btn-primary">Xem chi tiết</button>
+                </a>
+            </td>
+            <td>
+                @using (Html.BeginForm("InsertSuspendedUser", "ManageUser", new { area = "Admin", EmailAddress = item.EmailAddress }, FormMethod.Post))
+                {
+                    <button class="btn btn-danger">
+                        Cấm
+                    </button>
+                }
+            </td>
+        </tr>
+    }
     </tbody>
 </table>

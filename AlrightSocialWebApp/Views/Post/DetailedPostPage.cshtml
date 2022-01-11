@@ -65,13 +65,50 @@
                                 </svg>
                             </button>
                             <div class="dropdown-menu" aria-labelledby="more-btn">
-
                                 <form asp-controller="Post" asp-action="Delete" asp-route-id="@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)" method="post">
                                     <button type="submit" class="dropdown-item">Xoá</button>
                                 </form>
                                 <a class="dropdown-item" href="/post/edit?id=@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)">Sửa</a>
 
                             </div>
+                        }
+                        else
+                        {
+                            if (Context.Session.GetString("email") != null)
+                            {
+                                <button class="project-btn-more" id="more-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical">
+                                        <circle cx="12" cy="12" r="1" />
+                                        <circle cx="12" cy="5" r="1" />
+                                        <circle cx="12" cy="19" r="1" />
+                                    </svg>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="more-btn">
+                                    <button  class="dropdown-item" data-toggle="modal" data-target="#exampleModal">Báo cáo</button>
+                                </div>
+                            }
+                            <form style="position: absolute" asp-controller="PostReport" asp-action="Report" asp-route-id="@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)" method="post">
+                                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Báo cáo</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <label for="input-content-report">Nội dung</label>
+                                                <input class="form-control" id="input-content-report" name="Content" />
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                                                <button type="submit" class="btn btn-primary">Báo cáo</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
                         }
                     </div>
                     <h3 class="text-center">@Html.Raw(@Model.Post.GetType().GetProperty("Title").GetValue(Model.Post, null))</h3>
@@ -148,7 +185,7 @@
                                                 <input type="hidden" name="ID" value="@comment.GetType().GetProperty("ID").GetValue(comment, null)" />
                                                 <input type="hidden" name="UserEmail" value="@comment.GetType().GetProperty("UserEmail").GetValue(comment, null)" />
                                                 <input type="hidden" name="PostID" value="@comment.GetType().GetProperty("PostID").GetValue(comment, null)" />
-                                                
+
                                                 <input type="hidden" name="Time" value="@comment.GetType().GetProperty("Time").GetValue(comment, null)" />
                                                 <label for="input-content">Nội dung</label>
                                                 <input id="input-content" name="Content" onclick="this.select()" class="form-control" value="@comment.GetType().GetProperty("Content").GetValue(comment, null)" />

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AlrightSocialWebApp.Models.Post>;
+﻿@model List<object>;
 @{
     ViewData["Title"] = "ManagePostPageGUI";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
@@ -9,6 +9,7 @@
         <tr>
             <th>ID</th>
             <th>Tiêu đề</th>
+            <th>Số lượng báo cáo</th>
             <th></th>
             <th></th>
         </tr>
@@ -16,31 +17,32 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>@item.ID</td>
-                <td>@item.Title</td>
-                <td>
-                    <a href="/Post/DetailedPostPage?id=@item.ID">
-                        <button class="btn btn-primary">Xem chi tiết</button>
-                    </a>
-                </td>
-                <td>
-                    @using (Html.BeginForm("ManageCommentGUI", "PostComment", new { area = "Admin", PostID = item.ID }, FormMethod.Post))
-                    {
-                        <button class="btn btn-secondary">
-                            Quản lý bình luận
-                        </button>
-                    }
-                </td>
-                <td>
-                    @using (Html.BeginForm("DeletePostForAdmin", "Post", new { area = "Admin", id=item.ID }, FormMethod.Post))
-                    {
-                        <button class="btn btn-danger">
-                            Xoá
-                        </button>
-                    }
-                    </td>
-            </tr>
+        <tr>
+            <td>@item.GetType().GetProperty("ID").GetValue(item, null)</td>
+            <td>@item.GetType().GetProperty("Title").GetValue(item, null)</td>
+            <td>@item.GetType().GetProperty("AmountOfReport").GetValue(item, null)</td>
+            <td>
+                <a href="/Post/DetailedPostPage?id=@item.GetType().GetProperty("ID").GetValue(item, null)">
+                    <button class="btn btn-primary">Xem chi tiết</button>
+                </a>
+            </td>
+            <td>
+                @using (Html.BeginForm("ManageCommentGUI", "PostComment", new { area = "Admin", PostID = item.GetType().GetProperty("ID").GetValue(item, null) }, FormMethod.Post))
+                {
+                    <button class="btn btn-secondary">
+                        Quản lý bình luận
+                    </button>
+                }
+            </td>
+            <td>
+                @using (Html.BeginForm("DeletePostForAdmin", "Post", new { area = "Admin", id = item.GetType().GetProperty("ID").GetValue(item, null) }, FormMethod.Post))
+                {
+                    <button class="btn btn-danger">
+                        Xoá
+                    </button>
+                }
+            </td>
+        </tr>
         }
     </tbody>
 </table>

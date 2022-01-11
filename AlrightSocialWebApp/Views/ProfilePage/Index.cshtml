@@ -54,6 +54,8 @@
                         {
                             @if (Context.Session.GetString("email") != null)
                             {
+
+                                <button class="profile-menu-link" data-toggle="modal" data-target="#exampleModal">Báo cáo</button>
                                 @if (Model.isFriended.ToString() == "False")
                                 {
                                     @using (Html.BeginForm("InsertFriendRequest", "FriendRequest", new { UserEmail = Model.User.EmailAddress }, FormMethod.Post))
@@ -131,7 +133,7 @@
                                                     </svg>
                                                 }
                                                 else
-                                           if (post.GetType().GetProperty("Privacy").GetValue(post, null).ToString() == "Friend")
+                                      if (post.GetType().GetProperty("Privacy").GetValue(post, null).ToString() == "Friend")
                                                 {
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill mx-2" viewBox="0 0 16 16">
                                                         <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
@@ -140,7 +142,7 @@
                                                     </svg>
                                                 }
                                                 else
-                                           if (post.GetType().GetProperty("Privacy").GetValue(post, null).ToString() == "OnlyMe")
+                                      if (post.GetType().GetProperty("Privacy").GetValue(post, null).ToString() == "OnlyMe")
                                                 {
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock-fill mx-2" viewBox="0 0 16 16">
                                                         <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
@@ -271,7 +273,7 @@
                                                 </svg>
                                             }
                                             else
-                                      if (post.GetType().GetProperty("Privacy").GetValue(post, null).ToString() == "Friend")
+                                 if (post.GetType().GetProperty("Privacy").GetValue(post, null).ToString() == "Friend")
                                             {
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill mx-2" viewBox="0 0 16 16">
                                                     <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
@@ -280,7 +282,7 @@
                                                 </svg>
                                             }
                                             else
-                                      if (post.GetType().GetProperty("Privacy").GetValue(post, null).ToString() == "OnlyMe")
+                                 if (post.GetType().GetProperty("Privacy").GetValue(post, null).ToString() == "OnlyMe")
                                             {
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock-fill mx-2" viewBox="0 0 16 16">
                                                     <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
@@ -363,6 +365,29 @@
         </div>
         <div class="overlay"></div>
     </div>
+    <form asp-action="Report" asp-controller="ProfilePage" method="post">
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Báo cáo người dùng</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="input-content-report">Nội dung</label>
+                        <input id="input-content-report" name="Content" class="form-control"/>
+                        <input type="hidden" name="UserEmail" value="@Model.User.EmailAddress"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Xác nhận</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
     <script>
         var editor = CKEDITOR.replace('editor1', {
             height: 400,

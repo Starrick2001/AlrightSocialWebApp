@@ -13,8 +13,24 @@ namespace AlrightSocialWebApp.Areas.Admin.Controllers
         private DataContext _context = new DataContext();
         public IActionResult ManagePostPageGUI()
         {
-
-            return View(_context.Post.ToList());
+            List<object> list = new List<object>();
+            foreach (var item in _context.Post.ToList())
+            {
+                list.Add(new
+                {
+                    ID = item.ID,
+                    Title = item.Title,
+                    Content = item.Content,
+                    TimeCreate = item.TimeCreate,
+                    TimeModified = item.TimeModified,
+                    Author = item.Author,
+                    AuthorName = _context.GetUserInfo(item.Author).name,
+                    Privacy = item.Privacy,
+                    AmountOfReport = _context.AmountOfReport(item.ID)
+                });
+            }
+            list = list.OrderByDescending(o => o.GetType().GetProperty("AmountOfReport").GetValue(o, null)).ToList();
+            return View(list);
         }
         [HttpPost]
         public IActionResult DeletePostForAdmin(int id)
@@ -24,7 +40,7 @@ namespace AlrightSocialWebApp.Areas.Admin.Controllers
             string Title = post.Title;
             var notification = new Notification()
             {
-                Content = "Bài viết với tiêu đề '" + Title + "' của bạn đã bị quản trị viên xoá",
+                Content = "Bài viết của bạn với " + _context.AmountOfReport(id) + " lượt báo cáo có tiêu đề '" + Title + "' đã bị quản trị viên xoá",
                 IsRead = false,
                 Time = DateTime.Now,
                 UserEmail = Author,

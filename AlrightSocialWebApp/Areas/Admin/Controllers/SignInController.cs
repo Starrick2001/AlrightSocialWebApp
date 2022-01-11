@@ -11,8 +11,13 @@ namespace AlrightSocialWebApp.Areas.Admin.Controllers
     public class SignInController : Controller
     {
         [Area("Admin")]
+        [Route("Admin/")]
         public IActionResult SignInGUI()
         {
+            if (HttpContext.Session.GetString("email") != null)
+            {
+                return RedirectToAction("ManagePostPageGUI", "Post");
+            }
             return View();
         }
         private DataContext db = new DataContext();

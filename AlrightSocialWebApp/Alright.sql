@@ -133,6 +133,26 @@ CREATE TABLE Administrator (
 	 AvatarURL nvarchar(255)
 )
 
+CREATE TABLE PostReport(
+	EmailAddress nvarchar(255) NOT NULL,
+	PostID int NOT NULL,
+	Time datetime NOT NULL,
+	Content nvarchar(max),
+	PRIMARY KEY (EmailAddress, PostID),
+	FOREIGN KEY (EmailAddress) REFERENCES Users(EmailAddress),
+	FOREIGN KEY (PostID) REFERENCES Post(ID),
+)
+
+CREATE TABLE ReportedUser (
+	UserEmail nvarchar(255) NOT NULL,
+	ReportedUser nvarchar(255) NOT NULL,
+	Time datetime NOT NULL,
+	Content nvarchar(max),
+	PRIMARY KEY (UserEmail,ReportedUser),
+	FOREIGN KEY (UserEmail) REFERENCES Users(EmailAddress),
+	FOREIGN KEY (ReportedUser) REFERENCES Users(EmailAddress)
+)
+
 
 SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, ISNULL(LikeTable.[Like],0) AS [Like] , ISNULL(CommentTable.[Comment],0) AS [Comment], ISNULL(ShareTable.[Share],0) AS [Share]
 FROM Post 
@@ -413,3 +433,4 @@ FROM Users INNER JOIN (SELECT Author, Count(ID) AS [NumOfPost] FROM Post GROUP B
 SELECT Post.ID,Title, Content,Author, ISNULL(LikeTable.[Like], 0) AS[Like] , ISNULL(CommentTable.[Comment], 0) AS[Comment], ISNULL(ShareTable.[Share], 0) AS[Share]  
 FROM Post 
 LEFT JOIN(SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN(SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN(SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Post.Author = Users.EmailAddress
+
