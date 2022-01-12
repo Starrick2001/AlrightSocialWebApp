@@ -113,7 +113,7 @@
                         </div>
                         @foreach (var post in Model.Posts)
                         {
-                            @if (@post.GetType().GetProperty("SharePrivacy").GetValue(post, null) == "0")
+                            @if ((@post.GetType().GetProperty("SharePrivacy").GetValue(post, null) == "0") || (post.GetType().GetProperty("Author").GetValue(post, null) == Model.User.EmailAddress))
                             {
                                 <div class="album box">
                                     <div class="status-main">
