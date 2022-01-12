@@ -66,6 +66,24 @@ namespace AlrightSocialWebApp.Controllers
                 mymodel.isLiked = _context.isLiked(mymodel.Post.GetType().GetProperty("ID").GetValue(mymodel.Post, null), HttpContext.Session.GetString("email"));
             mymodel.Author = author;
             mymodel.Comment = _context.GetListOfComment(id);
+            List<string> postLike = new List<string>();
+            foreach (var item in _context.PostLike.Where(x => x.PostID == id))
+            {
+                postLike.Add(_context.GetUserInfo(item.UserEmail).name);
+            }
+            mymodel.ListOfLike = postLike.ToList();
+            List<string> postCmt = new List<string>();
+            foreach (var item in _context.PostComment.Where(x => x.PostID == id))
+            {
+                postCmt.Add(_context.GetUserInfo(item.UserEmail).name);
+            }
+            mymodel.ListOfCmt = postCmt.ToList().Distinct();
+            List<string> postShare = new List<string>();
+            foreach (var item in _context.PostShare.Where(x => x.PostID == id))
+            {
+                postShare.Add(_context.GetUserInfo(item.UserEmail).name);
+            }
+            mymodel.ListOfShare = postShare.ToList();
             return View(mymodel);
         }
 

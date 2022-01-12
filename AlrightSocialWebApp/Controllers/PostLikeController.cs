@@ -18,44 +18,51 @@ namespace AlrightSocialWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> InsertOrDeleteLike(string UserEmail, int PostID)
         {
-            if (_context.isSuspended(HttpContext.Session.GetString("email")) == true)
+            if (HttpContext.Session.GetString("email") == null)
             {
-                return RedirectToAction("SuspendedNotification", "HomePage");
-            }
-            var postLike = _context.PostLike.FirstOrDefault(l => l.UserEmail == HttpContext.Session.GetString("email") && l.PostID == PostID);
-            if (postLike != null)
-            {
-                _context.PostLike.Remove(postLike);
-                await _context.SaveChangesAsync();
-                var notification = await _context.Notification.FindAsync(postLike.NotificationID);
-                if (notification != null)
-                {
-                    _context.Notification.Remove(notification);
-                    await _context.SaveChangesAsync();
-                }
                 return RedirectToAction("DetailedPostPage", "Post", new { id = PostID });
             }
             else
             {
-                if (UserEmail != HttpContext.Session.GetString("email"))
+                if (_context.isSuspended(HttpContext.Session.GetString("email")) == true)
                 {
-                    PostLike like = new PostLike()
+                    return RedirectToAction("SuspendedNotification", "HomePage");
+                }
+                var postLike = _context.PostLike.FirstOrDefault(l => l.UserEmail == HttpContext.Session.GetString("email") && l.PostID == PostID);
+                if (postLike != null)
+                {
+                    _context.PostLike.Remove(postLike);
+                    await _context.SaveChangesAsync();
+                    var notification = await _context.Notification.FindAsync(postLike.NotificationID);
+                    if (notification != null)
                     {
-                        UserEmail = HttpContext.Session.GetString("email"),
-                        PostID = PostID
-                    };
-                    _context.InsertLike(like, UserEmail);
+                        _context.Notification.Remove(notification);
+                        await _context.SaveChangesAsync();
+                    }
                     return RedirectToAction("DetailedPostPage", "Post", new { id = PostID });
                 }
                 else
                 {
-                    PostLike like = new PostLike()
+                    if (UserEmail != HttpContext.Session.GetString("email"))
                     {
-                        UserEmail = HttpContext.Session.GetString("email"),
-                        PostID = PostID
-                    };
-                    _context.InsertLike(like);
-                    return RedirectToAction("DetailedPostPage", "Post", new { id = PostID });
+                        PostLike like = new PostLike()
+                        {
+                            UserEmail = HttpContext.Session.GetString("email"),
+                            PostID = PostID
+                        };
+                        _context.InsertLike(like, UserEmail);
+                        return RedirectToAction("DetailedPostPage", "Post", new { id = PostID });
+                    }
+                    else
+                    {
+                        PostLike like = new PostLike()
+                        {
+                            UserEmail = HttpContext.Session.GetString("email"),
+                            PostID = PostID
+                        };
+                        _context.InsertLike(like);
+                        return RedirectToAction("DetailedPostPage", "Post", new { id = PostID });
+                    }
                 }
             }
         }

@@ -143,7 +143,7 @@ CREATE TABLE PostReport(
 	FOREIGN KEY (PostID) REFERENCES Post(ID),
 )
 
-CREATE TABLE ReportedUser (
+CREATE TABLE ReportUser (
 	UserEmail nvarchar(255) NOT NULL,
 	ReportedUser nvarchar(255) NOT NULL,
 	Time datetime NOT NULL,
@@ -434,3 +434,5 @@ SELECT Post.ID,Title, Content,Author, ISNULL(LikeTable.[Like], 0) AS[Like] , ISN
 FROM Post 
 LEFT JOIN(SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN(SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN(SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Post.Author = Users.EmailAddress
 
+SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, Users.AvatarURL, Users.name,Post.SharePrivacy,Post.SharedEmail, Post.SharedName, Post.SharedAvatar, ISNULL(ShareTime,0) AS [ShareTime], ISNULL(LikeTable.[Like], 0) AS[Like] , ISNULL(CommentTable.[Comment], 0) AS[Comment], ISNULL(ShareTable.[Share], 0) AS[Share]  
+FROM (SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, ('0') AS[SharePrivacy], ('0') AS[SharedEmail], ('0') AS[SharedName], ('0') AS[SharedAvatar], NULL AS[ShareTime] FROM Post UNION SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Post.Privacy, PostShare.Privacy AS[SharePrivacy], PostShare.UserEmail AS[SharedEmail], Users.name AS[SharedName], Users.AvatarURL AS[SharedAvatar], PostShare.Time AS[ShareTime] FROM Post INNER JOIN PostShare ON Post.ID = PostShare.PostID INNER JOIN Users ON PostShare.UserEmail = Users.EmailAddress) AS[Post] LEFT JOIN(SELECT PostLike.PostID ID, COUNT(UserEmail) AS [Like] FROM PostLike GROUP BY PostLike.PostID) LikeTable ON LikeTable.ID = Post.ID LEFT JOIN(SELECT PostComment.PostID, COUNT(UserEmail) AS [Comment] FROM PostComment GROUP BY PostComment.PostID) CommentTable ON Post.ID = CommentTable.PostID LEFT JOIN(SELECT PostID, COUNT(UserEmail) AS [Share] FROM PostShare GROUP BY PostShare.PostID) ShareTable ON Post.ID = ShareTable.PostID INNER JOIN Users ON Post.Author = Users.EmailAddress WHERE((Post.Privacy = 'Public' AND Post.SharePrivacy = '0')OR (Post.SharePrivacy = 'Public')) ORDER BY Post.TimeCreate DESC

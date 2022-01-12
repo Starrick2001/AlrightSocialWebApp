@@ -4,15 +4,16 @@
 @{
     ViewData["Title"] = @Html.Raw(@Model.Post.GetType().GetProperty("Title").GetValue(Model.Post, null));
     Layout = "~/Views/Shared/_Layout.cshtml";
+
 }
 <head>
     <link rel="stylesheet" href="~/css/DetailedPostPage.css" />
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 </head>
 
 <section class="main" style="overflow: auto;flex:2">
     <div class="wrapper">
         <div class="left-col">
-
             <div class="post">
                 <div class="info">
                     <a href="/ProfilePage?EmailAddress=@Model.Post.GetType().GetProperty("Author").GetValue(Model.Post, null)">
@@ -84,7 +85,7 @@
                                     </svg>
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="more-btn">
-                                    <button  class="dropdown-item" data-toggle="modal" data-target="#exampleModal">Báo cáo</button>
+                                    <button class="dropdown-item" data-toggle="modal" data-target="#exampleModal">Báo cáo</button>
                                 </div>
                             }
                             <form style="position: absolute" asp-controller="PostReport" asp-action="Report" asp-route-id="@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)" method="post">
@@ -115,24 +116,25 @@
                     <div class="m-4">
                         @Html.Raw(@Model.Post.GetType().GetProperty("Content").GetValue(Model.Post, null))
                     </div>
+                    <hr />
                     <div class="post-content">
                         <div class="reaction-wrapper">
                             @using (Html.BeginForm("InsertOrDeleteLike", "PostLike", new { PostID = Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null), UserEmail = Model.Post.GetType().GetProperty("Author").GetValue(Model.Post, null) }, FormMethod.Post))
                             {
-                                <button class="btn album-action @(Context.Session.GetString("email") != null ? (Model.isLiked == true ? "active" : "a") : "")">
+                                <button data-toggle="tooltip" data-placement="right" data-html="true" title="@foreach (var like in Model.ListOfLike) { <span>@like.ToString()</span> <br>} " class="btn album-action @(Context.Session.GetString("email") != null ? (Model.isLiked == true ? "active" : "a") : "")">
                                     <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                         <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
                                     </svg>
                                     @Model.Post.GetType().GetProperty("Like").GetValue(Model.Post, null)
                                 </button>
                             }
-                            <a href="/post/DetailedPostPage?id=@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)" class="album-action">
+                            <a data-toggle="tooltip" data-placement="right" data-html="true" title="@foreach (var cmt in Model.ListOfCmt) { <span>@cmt.ToString()</span> <br>} " href="/post/DetailedPostPage?id=@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)" class="album-action">
                                 <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
                                     <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
                                 </svg>
                                 @Model.Post.GetType().GetProperty("Comment").GetValue(Model.Post, null)
                             </a>
-                            <a href="/PostShare/Create?PostID=@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)" class="album-action">
+                            <a data-toggle="tooltip" data-placement="right" data-html="true" title="@foreach (var share in Model.ListOfShare) { <span>@share.ToString()</span> <br>} " href="/PostShare/Create?PostID=@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)" class="album-action">
                                 <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
                                     <path d="M17 1l4 4-4 4" />
                                     <path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4" />
@@ -215,105 +217,11 @@
             </div>
         </div>
     </section>
-    @*<div class="messages-section">
-            <button class="messages-close">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle">
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="15" y1="9" x2="9" y2="15" />
-                    <line x1="9" y1="9" x2="15" y2="15" />
-                </svg>
-            </button>
-            <div class="projects-section-header">
-                <p>Client Messages</p>
-            </div>
-            <div class="messages">
-                <div class="message-box">
-                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2550&q=80" alt="profile image">
-                    <div class="message-content">
-                        <div class="message-header">
-                            <div class="name">Stephanie</div>
-                            <div class="star-checkbox">
-                                <input type="checkbox" id="star-1">
-                                <label for="star-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star">
-                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                    </svg>
-                                </label>
-                            </div>
-                        </div>
-                        <p class="message-line">
-                            I got your first assignment. It was quite good. 🥳 We can continue with the next assignment.
-                        </p>
-                        <p class="message-line time">
-                            Dec, 12
-                        </p>
-                    </div>
-                </div>
-                <div class="message-box">
-                    <img src="https://images.unsplash.com/photo-1600486913747-55e5470d6f40?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2550&q=80" alt="profile image">
-                    <div class="message-content">
-                        <div class="message-header">
-                            <div class="name">Mark</div>
-                            <div class="star-checkbox">
-                                <input type="checkbox" id="star-2">
-                                <label for="star-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star">
-                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                    </svg>
-                                </label>
-                            </div>
-                        </div>
-                        <p class="message-line">
-                            Hey, can tell me about progress of project? I'm waiting for your response.
-                        </p>
-                        <p class="message-line time">
-                            Dec, 12
-                        </p>
-                    </div>
-                </div>
-                <div class="message-box">
-                    <img src="https://images.unsplash.com/photo-1543965170-4c01a586684e?ixid=MXwxMjA3fDB8MHxzZWFyY2h8NDZ8fG1hbnxlbnwwfDB8MHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=60" alt="profile image">
-                    <div class="message-content">
-                        <div class="message-header">
-                            <div class="name">David</div>
-                            <div class="star-checkbox">
-                                <input type="checkbox" id="star-3">
-                                <label for="star-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star">
-                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                    </svg>
-                                </label>
-                            </div>
-                        </div>
-                        <p class="message-line">
-                            Awesome! 🤩 I like it. We can schedule a meeting for the next one.
-                        </p>
-                        <p class="message-line time">
-                            Dec, 12
-                        </p>
-                    </div>
-                </div>
-                <div class="message-box">
-                    <img src="https://images.unsplash.com/photo-1533993192821-2cce3a8267d1?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTl8fHdvbWFuJTIwbW9kZXJufGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=60" alt="profile image">
-                    <div class="message-content">
-                        <div class="message-header">
-                            <div class="name">Jessica</div>
-                            <div class="star-checkbox">
-                                <input type="checkbox" id="star-4">
-                                <label for="star-4">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star">
-                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                    </svg>
-                                </label>
-                            </div>
-                        </div>
-                        <p class="message-line">
-                            I am really impressed! Can't wait to see the final result.
-                        </p>
-                        <p class="message-line time">
-                            Dec, 11
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>*@
+    @section Scripts {
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+        </script>
+    }
