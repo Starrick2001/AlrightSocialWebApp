@@ -9,11 +9,18 @@
             };
     Random rd = new Random();
     int sumOfLike = 0;
+    int sumOfCmt = 0;
     int sumOfShare = 0;
+    int sumOfPost = 0;
     foreach (var item in Model.Posts)
     {
-        sumOfLike += (int)item.GetType().GetProperty("Like").GetValue(item, null);
-        sumOfShare += (int)item.GetType().GetProperty("Share").GetValue(item, null);
+        if (item.GetType().GetProperty("Author").GetValue(item, null) == Context.Session.GetString("email"))
+        {
+            sumOfPost++;
+            sumOfLike += (int)item.GetType().GetProperty("Like").GetValue(item, null);
+            sumOfCmt += (int)item.GetType().GetProperty("Comment").GetValue(item, null);
+            sumOfShare += (int)item.GetType().GetProperty("Share").GetValue(item, null);
+        }
     }
 
 }
@@ -26,16 +33,20 @@
     <div class="projects-section-line">
         <div class="projects-status">
             <div class="item-status">
-                <span class="status-number">@Model.Posts.Count</span>
+                <span class="status-number">@sumOfPost</span>
                 <span class="status-type">Bài viết</span>
             </div>
             <div class="item-status">
                 <span class="status-number">@sumOfLike</span>
-                <span class="status-type">Like</span>
+                <span class="status-type">Thích</span>
+            </div>
+            <div class="item-status">
+                <span class="status-number">@sumOfCmt</span>
+                <span class="status-type">Bình luận</span>
             </div>
             <div class="item-status">
                 <span class="status-number">@sumOfShare</span>
-                <span class="status-type">Share</span>
+                <span class="status-type">Chia sẻ</span>
             </div>
 
 

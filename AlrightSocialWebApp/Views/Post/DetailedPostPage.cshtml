@@ -119,29 +119,72 @@
                     <hr />
                     <div class="post-content">
                         <div class="reaction-wrapper">
-                            @using (Html.BeginForm("InsertOrDeleteLike", "PostLike", new { PostID = Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null), UserEmail = Model.Post.GetType().GetProperty("Author").GetValue(Model.Post, null) }, FormMethod.Post))
+                            @if (Model.ListOfLike.Count != 0)
                             {
-                                <button data-toggle="tooltip" data-placement="right" data-html="true" title="@foreach (var like in Model.ListOfLike) { <span>@like.ToString()</span> <br>} " class="btn album-action @(Context.Session.GetString("email") != null ? (Model.isLiked == true ? "active" : "a") : "")">
-                                    <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-                                    </svg>
-                                    @Model.Post.GetType().GetProperty("Like").GetValue(Model.Post, null)
-                                </button>
+                                @using (Html.BeginForm("InsertOrDeleteLike", "PostLike", new { PostID = Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null), UserEmail = Model.Post.GetType().GetProperty("Author").GetValue(Model.Post, null) }, FormMethod.Post))
+                                {
+                                    <button data-toggle="tooltip" data-placement="right" data-html="true" title="@foreach (var like in Model.ListOfLike)
+                                { <span>@like.ToString()</span> <br>} " class="btn album-action @(Context.Session.GetString("email") != null ? (Model.isLiked == true ? "active" : "a") : "")">
+                                        <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                                        </svg>
+                                        @Model.Post.GetType().GetProperty("Like").GetValue(Model.Post, null)
+                                    </button>
+                                }
                             }
-                            <a data-toggle="tooltip" data-placement="right" data-html="true" title="@foreach (var cmt in Model.ListOfCmt) { <span>@cmt.ToString()</span> <br>} " href="/post/DetailedPostPage?id=@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)" class="album-action">
-                                <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
-                                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-                                </svg>
-                                @Model.Post.GetType().GetProperty("Comment").GetValue(Model.Post, null)
-                            </a>
-                            <a data-toggle="tooltip" data-placement="right" data-html="true" title="@foreach (var share in Model.ListOfShare) { <span>@share.ToString()</span> <br>} " href="/PostShare/Create?PostID=@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)" class="album-action">
-                                <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
-                                    <path d="M17 1l4 4-4 4" />
-                                    <path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4" />
-                                    <path d="M21 13v2a4 4 0 01-4 4H3" />
-                                </svg>
-                                @Model.Post.GetType().GetProperty("Share").GetValue(Model.Post, null)
-                            </a>
+                            else
+                            {
+                                @using (Html.BeginForm("InsertOrDeleteLike", "PostLike", new { PostID = Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null), UserEmail = Model.Post.GetType().GetProperty("Author").GetValue(Model.Post, null) }, FormMethod.Post))
+                                {
+                                    <button class="btn album-action @(Context.Session.GetString("email") != null ? (Model.isLiked == true ? "active" : "a") : "")">
+                                        <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                                        </svg>
+                                        @Model.Post.GetType().GetProperty("Like").GetValue(Model.Post, null)
+                                    </button>
+                                }
+                            }
+                            @if (Model.ListOfCmt.Count != 0)
+                            {
+
+                                <a data-toggle="tooltip" data-placement="right" data-html="true" title="@foreach (var cmt in Model.ListOfCmt) { <span>@cmt.ToString()</span> <br>} " href="/post/DetailedPostPage?id=@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)" class="album-action">
+                                    <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
+                                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                                    </svg>
+                                    @Model.Post.GetType().GetProperty("Comment").GetValue(Model.Post, null)
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="/post/DetailedPostPage?id=@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)" class="album-action">
+                                    <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
+                                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                                    </svg>
+                                    @Model.Post.GetType().GetProperty("Comment").GetValue(Model.Post, null)
+                                </a>
+                            }
+                            @if (Model.ListOfShare.Count != 0)
+                            {
+                                <a data-toggle="tooltip" data-placement="right" data-html="true" title="@foreach (var share in Model.ListOfShare) { <span>@share.ToString()</span> <br>}" href="/PostShare/Create?PostID=@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)" class="album-action">
+                                    <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
+                                        <path d="M17 1l4 4-4 4" />
+                                        <path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4" />
+                                        <path d="M21 13v2a4 4 0 01-4 4H3" />
+                                    </svg>
+                                    @Model.Post.GetType().GetProperty("Share").GetValue(Model.Post, null)
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="/PostShare/Create?PostID=@Model.Post.GetType().GetProperty("ID").GetValue(Model.Post, null)" class="album-action">
+                                    <svg stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1" viewBox="0 0 24 24">
+                                        <path d="M17 1l4 4-4 4" />
+                                        <path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4" />
+                                        <path d="M21 13v2a4 4 0 01-4 4H3" />
+                                    </svg>
+                                    @Model.Post.GetType().GetProperty("Share").GetValue(Model.Post, null)
+                                </a>
+                            }
                         </div>
                         @foreach (var comment in Model.Comment)
                         {

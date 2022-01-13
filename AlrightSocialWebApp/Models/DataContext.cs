@@ -849,6 +849,7 @@ namespace AlrightSocialWebApp.Models
                 }
                 reader.Close();
             }
+            conn.Close();
             return list;
         }
 
@@ -869,6 +870,7 @@ namespace AlrightSocialWebApp.Models
                     temp = (int)reader["Report"];
                 }
             }
+            conn.Close();
             return temp;
         }
 
@@ -889,6 +891,7 @@ namespace AlrightSocialWebApp.Models
                     temp = Convert.ToInt32(reader["Num"]);
                 }
             }
+            conn.Close();
             return temp;
         }
     }

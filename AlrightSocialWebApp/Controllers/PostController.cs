@@ -38,7 +38,7 @@ namespace AlrightSocialWebApp.Controllers
         // GET: Post
         [Route("ManagePostPage")]
         [HttpGet]
-        public async Task<IActionResult> ManagePostPage()
+        public IActionResult ManagePostPage()
         {
             dynamic mymodel = new ExpandoObject();
             mymodel.Posts = _context.GetListOfPost(HttpContext.Session.GetString("email"), HttpContext.Session.GetString("email"));
@@ -77,7 +77,7 @@ namespace AlrightSocialWebApp.Controllers
             {
                 postCmt.Add(_context.GetUserInfo(item.UserEmail).name);
             }
-            mymodel.ListOfCmt = postCmt.ToList().Distinct();
+            mymodel.ListOfCmt = postCmt.Distinct().ToList();
             List<string> postShare = new List<string>();
             foreach (var item in _context.PostShare.Where(x => x.PostID == id))
             {
