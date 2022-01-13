@@ -1,0 +1,36 @@
+﻿@model IEnumerable<AlrightSocialWebApp.Models.DeletedPost>
+@{
+    ViewData["Title"] = "ManageDeletedPost";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tiêu đề</th>
+            <th>Nội dung</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var item in Model)
+            {
+        <tr>
+            <td>@item.ID</td>
+            <td>@item.Title</td>
+            <td>@item.TimeCreate</td>
+            <td>
+                @using (Html.BeginForm("RestorePost", "Post", new { area = "Admin", PostID = item.ID }, FormMethod.Post))
+                {
+                    <button class="btn btn-success">Khôi phục</button>
+                }
+                </td>
+            <td></td>
+        </tr>
+            }
+    </tbody>
+</table>

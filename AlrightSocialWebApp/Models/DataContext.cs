@@ -36,6 +36,8 @@ namespace AlrightSocialWebApp.Models
                 .HasKey(o => new { o.EmailAddress, o.PostID });
             modelBuilder.Entity<ReportUser>()
                 .HasKey(o => new { o.UserEmail, o.ReportedUser });
+            modelBuilder.Entity<DeletedLike>()
+                .HasKey(o => new { o.UserEmail, o.PostID });
         }
         public DbSet<User> Users { get; set; }
         public DbSet<SuspendedUser> SuspendedUser { get; set; }
@@ -762,6 +764,11 @@ namespace AlrightSocialWebApp.Models
         public DbSet<AlrightSocialWebApp.Models.Administrator> Administrator { get; set; }
         public DbSet<AlrightSocialWebApp.Models.PostReport> PostReport { get; set; }
         public DbSet<AlrightSocialWebApp.Models.ReportUser> ReportUser { get; set; }
+        public DbSet<AlrightSocialWebApp.Models.DeletedPost> DeletedPost { get; set; }
+        public DbSet<AlrightSocialWebApp.Models.DeletedNotification> DeletedNotification { get; set; }
+        public DbSet<AlrightSocialWebApp.Models.DeletedLike> DeletedLike { get; set; }
+        public DbSet<AlrightSocialWebApp.Models.DeletedShare> DeletedShare { get; set; }
+        public DbSet<AlrightSocialWebApp.Models.DeletedComment> DeletedComment { get; set; }
 
         public void InsertShare(PostShare share)
         {
@@ -860,6 +867,26 @@ namespace AlrightSocialWebApp.Models
                 while (reader.Read())
                 {
                     temp = (int)reader["Report"];
+                }
+            }
+            return temp;
+        }
+
+        public int identity(string table)
+        {
+            int temp = 0;
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = @"Data Source = localhost; Database = AlrightSocial; Integrated Security = SSPI";
+            string query = "SELECT IDENT_CURRENT(@table) AS [Num]";
+            SqlCommand cmd1 = new SqlCommand(query, conn);
+            conn.Open();
+            cmd1.Parameters.AddWithValue("@table", table);
+            var reader = cmd1.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    temp = Convert.ToInt32(reader["Num"]);
                 }
             }
             return temp;

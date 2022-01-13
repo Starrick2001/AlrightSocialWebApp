@@ -153,6 +153,63 @@ CREATE TABLE ReportUser (
 	FOREIGN KEY (ReportedUser) REFERENCES Users(EmailAddress)
 )
 
+CREATE TABLE DeletedPost (
+	ID INT NOT NULL PRIMARY KEY,
+	Title NVARCHAR(255),
+	Content NVARCHAR(MAX),
+	TimeCreate DATETIME,
+	TimeModified DATETIME,
+	Author NVARCHAR(255) NOT NULL,
+	Privacy NVARCHAR(255),
+	ImageURL NVARCHAR(255)
+)
+
+CREATE TABLE DeletedNotification (
+	ID INT NOT NULL PRIMARY KEY,
+	UserEmail NVARCHAR(255) NOT NULL,
+	Content NVARCHAR(MAX),
+	PostID int,
+	Time DATETIME,
+	IsRead BIT,
+	FOREIGN KEY (UserEmail) REFERENCES Users(EmailAddress),
+	FOREIGN KEY (PostID) REFERENCES DeletedPost(ID)
+)
+
+CREATE TABLE DeletedLike (
+	UserEmail NVARCHAR(255) NOT NULL,
+	PostID int NOT NULL,
+	NotificationID int,
+	PRIMARY KEY (UserEmail, PostID),
+	FOREIGN KEY (UserEmail) REFERENCES Users(EmailAddress),
+	FOREIGN KEY (PostID) REFERENCES DeletedPost(ID),
+	FOREIGN KEY (NotificationID) REFERENCES DeletedNotification(ID)
+)
+
+CREATE TABLE DeletedShare (
+	ID INT NOT NULL PRIMARY KEY,
+	UserEmail NVARCHAR(255) NOT NULL,
+	PostID int NOT NULL,
+	Privacy NVARCHAR(255),
+	NotificationID int,
+	Time Datetime,
+	FOREIGN KEY (UserEmail) REFERENCES Users(EmailAddress),
+	FOREIGN KEY (PostID) REFERENCES DeletedPost(ID),
+	FOREIGN KEY (NotificationID) REFERENCES DeletedNotification(ID)
+)
+
+CREATE TABLE DeletedComment (
+	ID INT NOT NULL PRIMARY KEY,
+	UserEmail NVARCHAR(255) NOT NULL,
+	PostID INT NOT NULL,
+	Content NVARCHAR(MAX),
+	NotificationID int,
+	Time Datetime,
+	FOREIGN KEY (UserEmail) REFERENCES Users(EmailAddress),
+	FOREIGN KEY (PostID) REFERENCES DeletedPost(ID),
+	FOREIGN KEY (NotificationID) REFERENCES DeletedNotification(ID)
+)
+
+SELECT IDENT_CURRENT('Post') AS [Num];
 
 SELECT Post.ID, Title, Content, TimeCreate, TimeModified, Author, Privacy, ISNULL(LikeTable.[Like],0) AS [Like] , ISNULL(CommentTable.[Comment],0) AS [Comment], ISNULL(ShareTable.[Share],0) AS [Share]
 FROM Post 
