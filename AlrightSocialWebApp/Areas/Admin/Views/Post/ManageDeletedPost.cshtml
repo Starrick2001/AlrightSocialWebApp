@@ -11,26 +11,37 @@
         <tr>
             <th>ID</th>
             <th>Tiêu đề</th>
+            <th>Thời gian</th>
             <th>Nội dung</th>
             <th></th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach(var item in Model)
-            {
+        @foreach (var item in Model)
+        {
         <tr>
             <td>@item.ID</td>
             <td>@item.Title</td>
             <td>@item.TimeCreate</td>
             <td>
+                <div>
+                    @Html.Raw(item.Content)
+                </div>
+            </td>
+            <td>
                 @using (Html.BeginForm("RestorePost", "Post", new { area = "Admin", PostID = item.ID }, FormMethod.Post))
                 {
                     <button class="btn btn-success">Khôi phục</button>
                 }
-                </td>
-            <td></td>
+            </td>
+            <td>
+                @using (Html.BeginForm("DeletePostPermanently", "Post", new { area = "Admin", PostID = item.ID }, FormMethod.Post))
+                {
+                    <button class="btn btn-danger">Xoá vĩnh viễn</button>
+                }
+            </td>
         </tr>
-            }
+        }
     </tbody>
 </table>

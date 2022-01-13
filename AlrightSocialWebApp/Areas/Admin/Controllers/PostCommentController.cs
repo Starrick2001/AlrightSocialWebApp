@@ -40,7 +40,7 @@ namespace AlrightSocialWebApp.Areas.Admin.Controllers
                 IsRead = false,
                 Time = DateTime.Now,
                 UserEmail = Author,
-                PostID = null
+                PostID = PostID
             };
             _context.Notification.Add(notification1);
             _context.SaveChanges();

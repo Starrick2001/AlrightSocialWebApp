@@ -227,5 +227,36 @@ namespace AlrightSocialWebApp.Areas.Admin.Controllers
             return RedirectToAction("ManagePostPageGUI");
         }
 
+        public IActionResult DeletePostPermanently(int PostID)
+        {
+            var comments = _context.DeletedComment.Where(o => o.PostID == PostID);
+            foreach (var item in comments)
+            {
+                _context.DeletedComment.Remove(item);
+            }
+            _context.SaveChanges();
+            var likes = _context.DeletedLike.Where(o => o.PostID == PostID);
+            foreach (var item in likes)
+            {
+                _context.DeletedLike.Remove(item);
+            }
+            _context.SaveChanges();
+            var shares = _context.DeletedShare.Where(o => o.PostID == PostID);
+            foreach (var item in shares)
+            {
+                _context.DeletedShare.Remove(item);
+            }
+            _context.SaveChanges();
+            var notifications = _context.DeletedNotification.Where(o => o.PostID == PostID);
+            foreach (var item in notifications)
+            {
+                _context.DeletedNotification.Remove(item);
+            }
+            _context.SaveChanges();
+            _context.DeletedPost.Remove(_context.DeletedPost.FirstOrDefault(o=>o.ID==PostID));
+            _context.SaveChanges();
+            return RedirectToAction("ManageDeletedPost");
+        }
+
     }
 }

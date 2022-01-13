@@ -55,7 +55,6 @@
                                 </div>
                             </div>
                         </a>
-                        <img src="img/option.PNG" class="options" alt="">
                         @if (String.Compare(Context.Session.GetString("email"), @Model.Post.GetType().GetProperty("Author").GetValue(Model.Post, null).ToString()) == 0)
                         {
                             <button class="project-btn-more" id="more-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
