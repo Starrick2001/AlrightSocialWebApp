@@ -198,7 +198,7 @@ namespace AlrightSocialWebApp.Controllers
             mymodel.Friends = list;
             mymodel.FriendRequests = _context.GetListOfFriendRequests(HttpContext.Session.GetString("email"));
             mymodel.Chat = friends;
-            return View("ManageFriendGUI",new { mymodel });
+            return View("ManageFriendGUI",mymodel);
         }
 
         private bool FriendExists(string id)

@@ -171,7 +171,7 @@
                                                 @if (item.GetType().GetProperty("SharedEmail").GetValue(item, null) == Context.Session.GetString("email"))
                                                 {
                                                     <form asp-controller="PostShare" asp-action="Delete" asp-route-id="@item.GetType().GetProperty("ID").GetValue(item, null)" method="post">
-                                                        <button type="submit" class="dropdown-item">Xoá</button>
+                                                        <button type="submit" class="dropdown-item">Xoá bài chia sẻ</button>
                                                     </form>
                                                 }
                                             </div>

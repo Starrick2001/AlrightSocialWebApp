@@ -110,7 +110,7 @@ namespace AlrightSocialWebApp.Controllers
             if (ModelState.IsValid)
             {
                 post.TimeCreate = DateTime.Now;
-                post.TimeModified = DateTime.Now;
+                post.TimeModified = post.TimeCreate;
                 post.Author = HttpContext.Session.GetString("email");
                 int count = _context.CreatePost(post);
             }
